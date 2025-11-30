@@ -16,21 +16,26 @@
         android:id="@+id/tvWelcome"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="40dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="130dp"
+        android:layout_marginTop="160dp"
+        android:layout_marginEnd="131dp"
         android:text="Welcome !"
         android:textColor="@android:color/white"
         android:textSize="32sp"
         android:textStyle="bold" />
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="255dp"
         android:layout_height="wrap_content"
-        android:text="Hi and welcome\nto every moment"
-        android:textSize="14sp"
-        android:textColor="@android:color/white"
         android:layout_below="@id/tvWelcome"
-        android:layout_marginStart="80dp"
-        android:layout_marginTop="8dp" />
+        android:layout_marginTop="8dp"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:text="Explore our beautiful bouquetes for every moment "
+        android:textColor="@android:color/white"
+        android:textSize="14sp" />
 
     <Button
         android:id="@+id/btnGetStarted"
@@ -41,6 +46,20 @@
         android:backgroundTint="#2D3142"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="80dp" />
+        android:layout_marginBottom="120dp" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="205dp"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/btnGetStarted"
+        android:layout_alignEnd="@+id/btnGetStarted"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="-2dp"
+        android:layout_marginEnd="-3dp"
+        android:layout_marginBottom="98dp"
+        android:gravity="center"
+        android:text="Already have an account ? Login"
+        android:textColor="@android:color/white" />
 
 </RelativeLayout>

@@ -1,27 +1,23 @@
 package com.example.bucqetbunga.activities
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.util.Patterns
 import android.widget.Button
-import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.example.bucqetbunga.MainActivity
 import com.example.bucqetbunga.R
 import com.example.bucqetbunga.utils.SessionManager
+import com.google.android.material.textfield.TextInputEditText
 
 class LoginActivity : AppCompatActivity() {
 
-    private lateinit var etEmail: EditText
-    private lateinit var etPassword: EditText
+    private lateinit var etEmail: TextInputEditText
+    private lateinit var etPassword: TextInputEditText
     private lateinit var btnLogin: Button
     private lateinit var btnGetStarted: Button
     private lateinit var sessionManager: SessionManager
 
-    private var isLoginFormVisible = false
-
-    @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -66,16 +62,14 @@ class LoginActivity : AppCompatActivity() {
         }
 
         // Validasi email format
-        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             Toast.makeText(this, "Format email tidak valid", Toast.LENGTH_SHORT).show()
             return
         }
 
-        // Login sederhana (untuk demo, nanti bisa pakai database)
-        if (email == "user@example.com" && password == "123456") {
-            // Simpan session
+        // Login sederhana (untuk demo)
+        if (email == "salsabilaabel63@gmail.com" && password == "123456") {
             sessionManager.createLoginSession(email, "User")
-
             Toast.makeText(this, "Login berhasil!", Toast.LENGTH_SHORT).show()
             navigateToMain()
         } else {

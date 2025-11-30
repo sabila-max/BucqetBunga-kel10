@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import com.example.bucqetbunga.R
 import com.example.bucqetbunga.fragments.DashboardFragment
 import com.example.bucqetbunga.fragments.CartFragment
+import com.example.bucqetbunga.fragments.OrderFragment
 import com.example.bucqetbunga.fragments.ProfileFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
@@ -25,6 +26,7 @@ class MainActivity : AppCompatActivity() {
             when (item.itemId) {
                 R.id.nav_home -> selectedFragment = DashboardFragment()
                 R.id.nav_cart -> selectedFragment = CartFragment()
+                R.id.nav_order -> selectedFragment = OrderFragment()  // TAMBAHAN INI
                 R.id.nav_profile -> selectedFragment = ProfileFragment()
             }
 

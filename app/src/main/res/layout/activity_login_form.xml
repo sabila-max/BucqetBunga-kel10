@@ -8,13 +8,15 @@
     android:padding="24dp">
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="190dp"
         android:layout_height="wrap_content"
-        android:text="Hello, welcome to your next\nstory."
+        android:layout_marginTop="200dp"
+        android:layout_marginStart="80dp"
+        android:layout_marginBottom="10dp"
+        android:gravity="center"
+        android:text="Make flowers with love and create  your precious moment"
         android:textColor="@android:color/white"
-        android:textSize="14sp"
-        android:layout_marginTop="40dp"
-        android:layout_marginBottom="60dp" />
+        android:textSize="14sp" />
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
@@ -32,17 +34,17 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
                 android:text="Login"
-                android:textSize="24sp"
-                android:textStyle="bold"
                 android:textColor="#2D3142"
-                android:layout_marginBottom="24dp" />
+                android:textSize="24sp"
+                android:textStyle="bold" />
 
             <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
+                android:layout_marginBottom="16dp">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etEmail"
@@ -54,10 +56,10 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="24dp"
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                 app:endIconMode="password_toggle">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -73,18 +75,18 @@
                 android:id="@+id/btnLogin"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
+                android:backgroundTint="#2D3142"
                 android:text="Login"
-                android:textColor="@android:color/white"
-                android:backgroundTint="#2D3142" />
+                android:textColor="@android:color/white" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Demo: email = user@example.com, password = 123456"
-                android:textSize="10sp"
-                android:textColor="#9E9E9E"
+                android:layout_gravity="center"
                 android:layout_marginTop="16dp"
-                android:layout_gravity="center" />
+                android:text="Demo: email = salsabilaabel63@gmail.com, password = 123456"
+                android:textColor="#9E9E9E"
+                android:textSize="10sp" />
 
         </LinearLayout>
 
