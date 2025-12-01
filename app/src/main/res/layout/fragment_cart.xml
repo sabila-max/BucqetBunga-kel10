@@ -6,20 +6,21 @@
     android:gravity="center"
     android:background="#FFF5F7">
 
-    <TextView
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Keranjang Belanja"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:textColor="#2D3142" />
+        android:background="#FF8FA1"
+        android:padding="16dp">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Keranjang Anda masih kosong"
-        android:textSize="14sp"
-        android:textColor="#9E9E9E"
-        android:layout_marginTop="8dp" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Keranjang Belanja"
+            android:layout_alignParentTop="true"
+            android:textColor="#2D3142"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+
+    </RelativeLayout>
 
 </LinearLayout>
