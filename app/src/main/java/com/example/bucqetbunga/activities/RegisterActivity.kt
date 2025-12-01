@@ -8,7 +8,8 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.bucqetbunga.R
-import com.example.bucqetbunga.utils.SessionManager // Pastikan SessionManager ada di utils
+import com.example.bucqetbunga.utils.SessionManager
+import com.google.android.material.textfield.TextInputEditText
 
 class RegisterActivity : AppCompatActivity() {
 
