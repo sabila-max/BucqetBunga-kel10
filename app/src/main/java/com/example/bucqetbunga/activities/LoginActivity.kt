@@ -49,6 +49,11 @@ class LoginActivity : AppCompatActivity() {
         btnLogin.setOnClickListener {
             performLogin()
         }
+        //Navigasi Menuju Daftar Akun
+        tvRegisterLink.setOnClickListener {
+            val intent = Intent(this, RegisterActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     private fun performLogin() {
