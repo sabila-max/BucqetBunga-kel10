@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Patterns
 import android.widget.Button
 import android.widget.Toast
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.bucqetbunga.R
 import com.example.bucqetbunga.utils.SessionManager
@@ -17,6 +18,8 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var btnLogin: Button
     private lateinit var btnGetStarted: Button
     private lateinit var sessionManager: SessionManager
+    private lateinit var tvRegisterLink: TextView
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,6 +48,8 @@ class LoginActivity : AppCompatActivity() {
         etEmail = findViewById(R.id.etEmail)
         etPassword = findViewById(R.id.etPassword)
         btnLogin = findViewById(R.id.btnLogin)
+
+        tvRegisterLink = findViewById(R.id.tvRegisterLink)
 
         btnLogin.setOnClickListener {
             performLogin()
