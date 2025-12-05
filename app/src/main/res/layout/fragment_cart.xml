@@ -11,7 +11,8 @@
         android:layout_height="80dp"
         android:background="#FF8FA1"
         android:orientation="vertical"
-        android:padding="14dp">
+        android:padding="16dp">
+
 
         <TextView
             android:layout_width="wrap_content"
@@ -20,16 +21,87 @@
             android:textColor="@android:color/white"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:layout_marginTop="4dp" />
+            android:layout_marginTop="8dp" />
 
     </LinearLayout>
 
-    <!-- List Pesanan -->
+    <!-- RecyclerView -->
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/cart"
+        android:id="@+id/rvCart"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="16dp" />
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:padding="8dp" />
 
+    <!-- Empty State -->
+    <LinearLayout
+        android:id="@+id/emptyState"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:visibility="gone">
+
+        <ImageView
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:src="@android:drawable/ic_menu_add"
+            android:alpha="0.3" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Keranjang masih kosong"
+            android:textSize="16sp"
+            android:textColor="#9E9E9E"
+            android:layout_marginTop="16dp" />
+
+    </LinearLayout>
+
+    <!-- Bottom Checkout -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:background="@android:color/white"
+        android:elevation="8dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Total:"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="#2D3142" />
+
+            <TextView
+                android:id="@+id/tvTotal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Rp. 65.000"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="#FF8FA1" />
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btnCheckout"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="Checkout"
+            android:textColor="@android:color/white"
+            android:backgroundTint="#00C853"
+            android:layout_marginTop="12dp" />
+
+    </LinearLayout>
 
 </LinearLayout>

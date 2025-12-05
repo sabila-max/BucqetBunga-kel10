@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFF5F7">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Header Pink -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:background="#FF8FA1"
+            android:padding="16dp">
+
+            <ImageView
+                android:id="@+id/ivBack"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@android:drawable/ic_menu_revert"
+                android:layout_centerVertical="true" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Checkout"
+                android:textColor="@android:color/white"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:layout_centerInParent="true" />
+
+        </RelativeLayout>
+
+        <!-- Product Card -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="4dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="12dp">
+
+                <ImageView
+                    android:id="@+id/ivProduct"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ic_launcher_background" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:layout_marginStart="12dp"
+                    android:layout_gravity="center_vertical">
+
+                    <TextView
+                        android:id="@+id/tvProductName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Bucket Snack Mix Pink"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="#2D3142" />
+
+                    <TextView
+                        android:id="@+id/tvProductPrice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Rp. 65.000"
+                        android:textSize="14sp"
+                        android:textColor="#FF8FA1"
+                        android:layout_marginTop="4dp" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+        <!-- Sambutan dan Deskripsi -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="2dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Sambutan Otomatis akan diberikan"
+                    android:textSize="12sp"
+                    android:textColor="#9E9E9E" />
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@android:drawable/ic_menu_edit"
+                    android:layout_gravity="end"
+                    android:layout_marginTop="8dp" />
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+        <!-- Informasi Pengiriman -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Informasi Pengiriman"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#2D3142"
+            android:layout_marginStart="16dp"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Form Input -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="2dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Nama"
+                    android:textSize="14sp"
+                    android:textColor="#2D3142"
+                    android:layout_marginBottom="4dp" />
+
+                <EditText
+                    android:id="@+id/etNoPesanan"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:hint="Nama Penerima"
+                    android:background="@android:color/transparent"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    android:textSize="14sp" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#E0E0E0"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="16dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Alamat Lengkap"
+                    android:textSize="14sp"
+                    android:textColor="#2D3142"
+                    android:layout_marginBottom="4dp" />
+
+                <EditText
+                    android:id="@+id/etAlamat"
+                    android:layout_width="match_parent"
+                    android:layout_height="80dp"
+                    android:hint="Alamat lengkap pengiriman"
+                    android:background="@android:color/transparent"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    android:gravity="top"
+                    android:textSize="14sp"
+                    android:inputType="textMultiLine" />
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+        <!-- Pembayaran -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Pembayaran"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#2D3142"
+            android:layout_marginStart="16dp"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Payment Methods -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="2dp">
+
+            <RadioGroup
+                android:id="@+id/rgPayment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <RadioButton
+                    android:id="@+id/rbCOD"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:text="COD"
+                    android:textSize="14sp"
+                    android:textColor="#2D3142"
+                    android:drawableEnd="@android:drawable/ic_menu_mylocation"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#E0E0E0"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="4dp" />
+
+                <RadioButton
+                    android:id="@+id/rbQris"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:text="Qris"
+                    android:textSize="14sp"
+                    android:textColor="#2D3142"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#E0E0E0"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="4dp" />
+
+                <RadioButton
+                    android:id="@+id/rbTransferBank"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:text="Transfer Bank"
+                    android:textSize="14sp"
+                    android:textColor="#2D3142"
+                    android:drawableEnd="@android:drawable/ic_menu_sort_by_size"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp" />
+
+            </RadioGroup>
+
+        </androidx.cardview.widget.CardView>
+
+        <!-- Button Buat Pesanan -->
+        <Button
+            android:id="@+id/btnOrder"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="Buat Pesanan"
+            android:textColor="@android:color/white"
+            android:backgroundTint="#2D3142"
+            android:layout_margin="16dp"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+</ScrollView>

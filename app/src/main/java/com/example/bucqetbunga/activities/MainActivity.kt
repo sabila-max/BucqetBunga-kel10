@@ -4,10 +4,11 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.example.bucqetbunga.R
-import com.example.bucqetbunga.fragments.CartFragment
 import com.example.bucqetbunga.fragment.DashboardFragment
+import com.example.bucqetbunga.fragments.CartFragment
 import com.example.bucqetbunga.fragments.OrderFragment
 import com.example.bucqetbunga.fragments.ProfileFragment
+import com.example.bucqetbunga.utils.CartManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
@@ -26,7 +27,7 @@ class MainActivity : AppCompatActivity() {
             when (item.itemId) {
                 R.id.nav_home -> selectedFragment = DashboardFragment()
                 R.id.nav_cart -> selectedFragment = CartFragment()
-                R.id.nav_order -> selectedFragment = OrderFragment()  // TAMBAHAN INI
+                R.id.nav_order -> selectedFragment = OrderFragment()
                 R.id.nav_profile -> selectedFragment = ProfileFragment()
             }
 
@@ -39,12 +40,42 @@ class MainActivity : AppCompatActivity() {
             true
         }
 
-        // Load default fragment
+        // Cek apakah ada intent untuk buka tab Pesanan
+        val openOrders = intent.getBooleanExtra("open_orders", false)
+
         if (savedInstanceState == null) {
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.fragmentContainer, DashboardFragment())
-                .commit()
-            bottomNav.selectedItemId = R.id.nav_home
+            if (openOrders) {
+                // Buka tab Pesanan setelah checkout
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.fragmentContainer, OrderFragment())
+                    .commit()
+                bottomNav.selectedItemId = R.id.nav_order
+            } else {
+                // Default: buka Dashboard
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.fragmentContainer, DashboardFragment())
+                    .commit()
+                bottomNav.selectedItemId = R.id.nav_home
+            }
+        }
+
+        updateCartBadge()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        updateCartBadge()
+    }
+
+    private fun updateCartBadge() {
+        val badge = bottomNav.getOrCreateBadge(R.id.nav_cart)
+        val cartCount = CartManager.getCartCount()
+
+        if (cartCount > 0) {
+            badge.isVisible = true
+            badge.number = cartCount
+        } else {
+            badge.isVisible = false
         }
     }
 }
