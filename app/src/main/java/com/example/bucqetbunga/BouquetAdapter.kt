@@ -7,9 +7,9 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.bucqetbunga.models.Bouquet // Import data class yang baru
+import com.example.bucqetbunga.models.Bouquet
+import com.example.bucqetbunga.BouquetCategory
 
-// Interface untuk mengirim event klik ke Fragment (reusable)
 interface OnBouquetClickListener {
     fun onOrderClick(bouquet: Bouquet)
 }

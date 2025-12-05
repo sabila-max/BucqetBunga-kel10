@@ -2,20 +2,20 @@ package com.example.bucqetbunga.models
 
 import java.text.NumberFormat
 import java.util.*
+import com.example.bucqetbunga.BouquetCategory
 
 data class Bouquet(
     val id: Int,
     val name: String,
     val description: String,
-    val price: Double, // Menggunakan Double untuk kalkulasi
-    val category: BouquetCategory, // Menggunakan Enum Category
+    val price: Double,
+    val category: BouquetCategory,
     val stock: Int,
-    val imageResId: Int // ID resource gambar (R.drawable.xxx)
+    val imageResId: Int
 ) {
-    // Fungsi untuk memformat harga menjadi Rupiah (reusable)
     fun getFormattedPrice(): String {
         val formatter = NumberFormat.getCurrencyInstance(Locale("in", "ID"))
-        formatter.maximumFractionDigits = 0 // Menghilangkan ,00 di belakang
-        return formatter.format(price) // Contoh output: Rp125.000
+        formatter.maximumFractionDigits = 0
+        return formatter.format(price)
     }
 }
