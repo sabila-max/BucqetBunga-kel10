@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.example.bucqetbunga.R
-import com.example.bucqetbunga.fragment.DashboardFragment
+import com.example.bucqetbunga.fragments.DashboardFragment
 import com.example.bucqetbunga.fragments.CartFragment
 import com.example.bucqetbunga.fragments.OrderFragment
 import com.example.bucqetbunga.fragments.ProfileFragment

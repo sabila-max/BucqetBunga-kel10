@@ -15,8 +15,7 @@
         <ImageView
             android:id="@+id/ivBouquetImage"
             android:layout_width="match_parent"
-            android:layout_height="180dp"
-            android:scaleType="centerCrop"
+            android:layout_height="140dp"  android:scaleType="centerCrop"
             android:src="@drawable/ic_launcher_foreground"
             android:contentDescription="Gambar Bouquet" />
 
@@ -40,29 +39,36 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Deskripsi singkat produk"
-                android:textSize="14sp"
-                android:layout_marginTop="4dp"
-                android:maxLines="4"
-                android:ellipsize="end" />
+                android:textSize="12sp"  android:layout_marginTop="2dp" android:maxLines="2"  android:ellipsize="end" />
 
-            <TextView
-                android:id="@+id/tvBouquetPrice"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Rp 000.000"
-                android:textSize="16sp"
-                android:textColor="#FF8FA1"
-                android:textStyle="bold"
-                android:layout_marginTop="8dp" />
-
-            <Button
-                android:id="@+id/btnOrder"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:layout_marginTop="12dp"
-                android:text="Pesan Sekarang"
-                android:backgroundTint="#2D3142"
-                android:textSize="14sp" />
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="8dp"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:id="@+id/tvBouquetPrice"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Rp 000.000"
+                    android:textSize="16sp"
+                    android:textColor="#FF8FA1"
+                    android:textStyle="bold" />
+
+                <Button
+                    android:id="@+id/btnOrder"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:layout_marginStart="8dp"
+                    android:text="Pesan Sekarang"
+                    android:backgroundTint="#2D3142"
+                    android:textSize="14sp" />
+
+            </LinearLayout>
+
 
         </LinearLayout>
     </LinearLayout>

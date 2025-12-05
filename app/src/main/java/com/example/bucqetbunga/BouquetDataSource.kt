@@ -1,11 +1,11 @@
-package com.example.bucqetbunga.data
+package com.example.bucqetbunga.data // <-- HANYA SATU PACKAGE DI BARIS PERTAMA
 
 import com.example.bucqetbunga.R
 import com.example.bucqetbunga.models.Bouquet
-import com.example.bucqetbunga.BouquetCategory
+import com.example.bucqetbunga.BouquetCategory // Mengimpor Enum dari package utama
+
 object BouquetDataSource {
     fun getBouquets(): List<Bouquet> = listOf(
-
         Bouquet(1, "Leony", "Bunga Mawar, Gompie, Filler", 75000.0, BouquetCategory.ARTIFICIAL, 10, R.drawable.ic_launcher_foreground),
         Bouquet(2, "Denish", "Full Of Snack", 85000.0, BouquetCategory.SNACK, 15, R.drawable.ic_launcher_foreground),
         Bouquet(3, "Caleo", "Red Rose, Baby Breath, Caspea", 125000.0, BouquetCategory.FRESH, 8, R.drawable.ic_launcher_foreground),
