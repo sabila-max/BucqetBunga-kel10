@@ -11,7 +11,7 @@
         android:layout_width="190dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="200dp"
-        android:layout_marginStart="80dp"
+        android:layout_marginStart="75dp"
         android:layout_marginBottom="10dp"
         android:gravity="center"
         android:text="Make flowers with love and create your precious moment"

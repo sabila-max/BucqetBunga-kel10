@@ -1,4 +1,4 @@
-package com.example.bucqetbunga.fragments
+package com.example.bucqetbunga.fragment
 
 import android.os.Bundle
 import android.view.LayoutInflater
