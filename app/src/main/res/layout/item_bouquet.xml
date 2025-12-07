@@ -15,7 +15,8 @@
         <ImageView
             android:id="@+id/ivBouquetImage"
             android:layout_width="match_parent"
-            android:layout_height="140dp"  android:scaleType="centerCrop"
+            android:layout_height="140dp"
+            android:scaleType="centerCrop"
             android:src="@drawable/ic_launcher_foreground"
             android:contentDescription="Gambar Bouquet" />
 
@@ -39,7 +40,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Deskripsi singkat produk"
-                android:textSize="12sp"  android:layout_marginTop="2dp" android:maxLines="2"  android:ellipsize="end" />
+                android:textSize="12sp"
+                android:layout_marginTop="2dp"
+                android:maxLines="2"
+                android:ellipsize="end" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -63,13 +67,21 @@
                     android:layout_width="wrap_content"
                     android:layout_height="40dp"
                     android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
                     android:text="Pesan Sekarang"
                     android:backgroundTint="#2D3142"
                     android:textSize="14sp" />
 
+                <ImageButton
+                    android:id="@+id/btnAddToCart"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/ic_cart"
+                    android:backgroundTint="#FF8FA1"
+                    android:contentDescription="Tambah ke Keranjang"
+                    android:scaleType="fitCenter"/>
+
             </LinearLayout>
-
-
         </LinearLayout>
     </LinearLayout>
 </androidx.cardview.widget.CardView>

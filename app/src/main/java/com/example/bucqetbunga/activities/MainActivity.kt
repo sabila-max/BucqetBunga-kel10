@@ -8,16 +8,20 @@ import com.example.bucqetbunga.fragments.DashboardFragment
 import com.example.bucqetbunga.fragments.CartFragment
 import com.example.bucqetbunga.fragments.OrderFragment
 import com.example.bucqetbunga.fragments.ProfileFragment
-import com.example.bucqetbunga.utils.CartManager
+import com.example.bucqetbunga.utils.CartManager // CartManager sekarang Class
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var bottomNav: BottomNavigationView
+    private lateinit var cartManager: CartManager // <-- BARU: Deklarasi instance CartManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        // FIX: Inisialisasi CartManager sebagai Class
+        cartManager = CartManager(this)
 
         bottomNav = findViewById(R.id.bottomNavigation)
 
@@ -67,9 +71,10 @@ class MainActivity : AppCompatActivity() {
         updateCartBadge()
     }
 
-    private fun updateCartBadge() {
+    // FIX: Mengubah CartManager.getCartCount() menjadi cartManager.getCartCount()
+    fun updateCartBadge() {
         val badge = bottomNav.getOrCreateBadge(R.id.nav_cart)
-        val cartCount = CartManager.getCartCount()
+        val cartCount = cartManager.getCartCount() // Menggunakan instance CartManager
 
         if (cartCount > 0) {
             badge.isVisible = true

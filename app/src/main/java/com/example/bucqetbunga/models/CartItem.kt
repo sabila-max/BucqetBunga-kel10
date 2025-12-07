@@ -1,16 +1,23 @@
 package com.example.bucqetbunga.models
 
+import java.text.NumberFormat
+import java.util.*
+
+// FIX: Struktur disederhanakan untuk persistence. Bouquet.id digunakan sebagai pengenal.
 data class CartItem(
-    val id: Int,
     val bouquet: Bouquet,
     var quantity: Int = 1,
-    var isSelected: Boolean = false
+    var isSelected: Boolean = true // Default set True saat item ditambahkan
 ) {
     fun getTotalPrice(): Double {
         return bouquet.price * quantity
     }
 
     fun getFormattedTotal(): String {
-        return "Rp. ${String.format("%,.0f", getTotalPrice())}"
+        // Menggunakan format Rupiah yang benar dan modern
+        val indonesiaLocale = Locale.forLanguageTag("in-ID")
+        val formatter = NumberFormat.getCurrencyInstance(indonesiaLocale)
+        formatter.maximumFractionDigits = 0
+        return formatter.format(getTotalPrice())
     }
 }
