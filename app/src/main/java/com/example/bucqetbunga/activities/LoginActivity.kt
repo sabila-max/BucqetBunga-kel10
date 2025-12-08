@@ -1,5 +1,4 @@
 package com.example.bucqetbunga.activities
-
 import android.content.Intent
 import android.os.Bundle
 import android.util.Patterns
@@ -18,12 +17,14 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var btnGetStarted: Button
     private lateinit var sessionManager: SessionManager
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         sessionManager = SessionManager(this)
 
         // Cek apakah sudah login
+
         if (sessionManager.isLoggedIn()) {
             navigateToMain()
             return
@@ -31,29 +32,35 @@ class LoginActivity : AppCompatActivity() {
 
         // Tampilkan welcome screen
         setContentView(R.layout.activity_login)
-
         btnGetStarted = findViewById(R.id.btnGetStarted)
         btnGetStarted.setOnClickListener {
             showLoginForm()
         }
+
     }
+
+
 
     private fun showLoginForm() {
         // Ganti ke layout login form
         setContentView(R.layout.activity_login_form)
-
         etEmail = findViewById(R.id.etEmail)
         etPassword = findViewById(R.id.etPassword)
         btnLogin = findViewById(R.id.btnLogin)
 
         btnLogin.setOnClickListener {
             performLogin()
+
         }
+
     }
+
+
 
     private fun performLogin() {
         val email = etEmail.text.toString().trim()
         val password = etPassword.text.toString().trim()
+
 
         // Validasi input
         if (email.isEmpty() || password.isEmpty()) {
@@ -65,7 +72,9 @@ class LoginActivity : AppCompatActivity() {
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             Toast.makeText(this, "Format email tidak valid", Toast.LENGTH_SHORT).show()
             return
+
         }
+
 
         // Login sederhana (untuk demo)
         if (email == "salsabilaabel63@gmail.com" && password == "123456") {
@@ -75,11 +84,14 @@ class LoginActivity : AppCompatActivity() {
         } else {
             Toast.makeText(this, "Email atau password salah", Toast.LENGTH_SHORT).show()
         }
+
     }
+
 
     private fun navigateToMain() {
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
         finish()
     }
+
 }
