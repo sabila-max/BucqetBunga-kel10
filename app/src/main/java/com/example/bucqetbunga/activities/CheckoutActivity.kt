@@ -15,6 +15,9 @@ import com.example.bucqetbunga.utils.CartManager
 
 class CheckoutActivity : AppCompatActivity() {
 
+    // 1. Deklarasi Instance CartManager
+    private lateinit var cartManager: CartManager
+
     private lateinit var ivBack: ImageView
     private lateinit var tvProductName: TextView
     private lateinit var tvProductPrice: TextView
@@ -26,6 +29,9 @@ class CheckoutActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_checkout)
+
+        // 2. Inisialisasi CartManager
+        cartManager = CartManager(this)
 
         initViews()
         loadCheckoutData()
@@ -43,23 +49,24 @@ class CheckoutActivity : AppCompatActivity() {
     }
 
     private fun loadCheckoutData() {
-        val selectedItems = CartManager.getSelectedItems()
+        // 3. Panggil fungsi pakai huruf kecil 'cartManager'
+        val selectedItems = cartManager.getSelectedItems()
 
         if (selectedItems.isNotEmpty()) {
             val firstItem = selectedItems[0]
-            tvProductName.text = firstItem.bouquet.name
-            tvProductPrice.text = CartManager.getFormattedTotal()
+            // Jika lebih dari 1 item, tampilkan "Item A, Item B, dll"
+            if (selectedItems.size > 1) {
+                tvProductName.text = "${firstItem.bouquet.name} dan ${selectedItems.size - 1} lainnya"
+            } else {
+                tvProductName.text = firstItem.bouquet.name
+            }
+            tvProductPrice.text = cartManager.getFormattedTotal()
         }
     }
 
     private fun setupListeners() {
-        ivBack.setOnClickListener {
-            finish()
-        }
-
-        btnOrder.setOnClickListener {
-            processOrder()
-        }
+        ivBack.setOnClickListener { finish() }
+        btnOrder.setOnClickListener { processOrder() }
     }
 
     private fun processOrder() {
@@ -67,7 +74,6 @@ class CheckoutActivity : AppCompatActivity() {
         val alamat = etAlamat.text.toString().trim()
         val selectedPaymentId = rgPayment.checkedRadioButtonId
 
-        // Validasi
         if (customerName.isEmpty() || alamat.isEmpty()) {
             Toast.makeText(this, "Harap isi semua field", Toast.LENGTH_SHORT).show()
             return
@@ -80,19 +86,18 @@ class CheckoutActivity : AppCompatActivity() {
 
         val paymentMethod = findViewById<RadioButton>(selectedPaymentId).text.toString()
 
-        // Buat pesanan
-        val order = CartManager.createOrder(customerName, alamat, paymentMethod)
+        // 4. Panggil createOrder dari instance
+        val order = cartManager.createOrder(customerName, alamat, paymentMethod)
 
         Toast.makeText(
             this,
-            "Pesanan berhasil dibuat!\nTotal: ${order.getFormattedTotal()}\nPembayaran: $paymentMethod",
+            "Pesanan berhasil!\nTotal: ${order.getFormattedTotal()}",
             Toast.LENGTH_LONG
         ).show()
 
-        // Kembali ke MainActivity dan pindah ke tab Pesanan
         val intent = Intent(this, MainActivity::class.java)
         intent.putExtra("open_orders", true)
-        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
         startActivity(intent)
         finish()
     }

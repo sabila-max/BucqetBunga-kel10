@@ -17,6 +17,8 @@ class OrderFragment : Fragment() {
     private lateinit var rvOrders: RecyclerView
     private lateinit var adapter: OrderAdapter
     private lateinit var emptyState: LinearLayout
+    // 1. Tambah CartManager
+    private lateinit var cartManager: CartManager
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -24,6 +26,9 @@ class OrderFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_order, container, false)
+
+        // 2. Inisialisasi
+        cartManager = CartManager(requireContext())
 
         initViews(view)
         setupRecyclerView()
@@ -43,13 +48,15 @@ class OrderFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        adapter = OrderAdapter(requireContext(), CartManager.getOrders())
+        // 3. Panggil getOrders dari instance cartManager
+        adapter = OrderAdapter(requireContext(), cartManager.getOrders())
         rvOrders.layoutManager = LinearLayoutManager(context)
         rvOrders.adapter = adapter
     }
 
     private fun updateUI() {
-        val orders = CartManager.getOrders()
+        // 4. Panggil getOrders dari instance cartManager
+        val orders = cartManager.getOrders()
 
         if (orders.isEmpty()) {
             emptyState.visibility = View.VISIBLE
