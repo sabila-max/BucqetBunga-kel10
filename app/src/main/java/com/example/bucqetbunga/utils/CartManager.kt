@@ -3,22 +3,21 @@ package com.example.bucqetbunga.utils
 import android.content.Context
 import com.example.bucqetbunga.models.Bouquet
 import com.example.bucqetbunga.models.CartItem
-import com.example.bucqetbunga.models.Order // Asumsi Order model ada
+import com.example.bucqetbunga.models.Order
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.text.NumberFormat
 import java.util.*
 
-// FIX: Diubah dari object menjadi CLASS untuk menggunakan Context (SharedPreferences)
 class CartManager(private val context: Context) {
 
     private val PREF_NAME = "CartPrefs"
     private val KEY_CART_ITEMS = "CartItems"
-    private val KEY_ORDERS = "Orders" // Untuk OrderFragment
+    private val KEY_ORDERS = "Orders"
     private val prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
     private val gson = Gson()
 
-    // --- UTILITIES PERSISTENSI ---
+    // --- KERANJANG UTAMA (Persistence Logic) ---
 
     fun getCartItems(): MutableList<CartItem> {
         val json = prefs.getString(KEY_CART_ITEMS, null)
@@ -30,13 +29,12 @@ class CartManager(private val context: Context) {
         }
     }
 
-    fun saveCartItems(items: MutableList<CartItem>) {
+    private fun saveCartItems(items: MutableList<CartItem>) {
         val json = gson.toJson(items)
         prefs.edit().putString(KEY_CART_ITEMS, json).apply()
     }
 
-    // --- LOGIKA KERANJANG ---
-
+    // FIX: Quick Add (Dari Dashboard)
     fun addItemToCart(bouquet: Bouquet) {
         val currentItems = getCartItems()
         val existingItem = currentItems.find { it.bouquet.id == bouquet.id }
@@ -44,72 +42,46 @@ class CartManager(private val context: Context) {
         if (existingItem != null) {
             existingItem.quantity += 1
         } else {
-            // FIX: Menggunakan CartItem baru
-            currentItems.add(CartItem(bouquet = bouquet, quantity = 1, isSelected = true))
+            // FIX: Menggunakan constructor CartItem yang lengkap (ID, Bouquet, Qty, isSelected, Note)
+            currentItems.add(CartItem(
+                id = System.currentTimeMillis(),
+                bouquet = bouquet,
+                quantity = 1,
+                isSelected = true,
+                note = ""
+            ))
         }
-
         saveCartItems(currentItems)
     }
 
-    // Dipanggil oleh Adapter saat quantity atau isSelected berubah
-    fun updateItem(cartItem: CartItem) {
+    // FIX: Add With Note (Dari DetailActivity)
+    fun addItemToCartWithNote(bouquet: Bouquet, note: String) {
         val currentItems = getCartItems()
-        val index = currentItems.indexOfFirst { it.bouquet.id == cartItem.bouquet.id }
-        if (index != -1) {
-            currentItems[index] = cartItem
-            saveCartItems(currentItems)
+        val existingItem = currentItems.find {
+            it.bouquet.id == bouquet.id && it.note == note
         }
-    }
 
-    fun removeItemFromCart(cartItem: CartItem) {
-        val currentItems = getCartItems()
-        currentItems.removeIf { it.bouquet.id == cartItem.bouquet.id }
-        saveCartItems(currentItems)
-    }
-
-    fun getSelectedItems(): List<CartItem> {
-        return getCartItems().filter { it.isSelected }
-    }
-
-    fun getTotalPrice(): Double {
-        return getCartItems().filter { it.isSelected }.sumOf { it.getTotalPrice() }
-    }
-
-    fun getFormattedTotal(): String {
-        val indonesiaLocale = Locale.forLanguageTag("in-ID")
-        val format = NumberFormat.getCurrencyInstance(indonesiaLocale)
-        format.maximumFractionDigits = 0
-        return format.format(getTotalPrice())
-    }
-
-    fun clearCart() {
-        prefs.edit().remove(KEY_CART_ITEMS).apply()
-    }
-
-    fun getCartCount(): Int {
-        return getCartItems().sumOf { it.quantity }
-    }
-
-    // --- LOGIKA ORDER/PESANAN (DIPERTAHANKAN UNTUK KONSISTENSI) ---
-
-    fun getOrders(): MutableList<Order> {
-        val json = prefs.getString(KEY_ORDERS, null)
-        return if (json != null) {
-            val type = object : TypeToken<MutableList<Order>>() {}.type
-            gson.fromJson(json, type) ?: mutableListOf()
+        if (existingItem != null) {
+            existingItem.quantity += 1
         } else {
-            mutableListOf()
+            currentItems.add(CartItem(
+                id = System.currentTimeMillis(),
+                bouquet = bouquet,
+                quantity = 1,
+                isSelected = true,
+                note = note
+            ))
         }
+        saveCartItems(currentItems)
     }
 
-    // FIX: Logika Checkout: membuat pesanan dan menghapus item terpilih dari keranjang
+    // FIX: Fungsi Checkout
     fun createOrder(customerName: String, address: String, paymentMethod: String): Order {
         val selectedItems = getSelectedItems()
         val total = getTotalPrice()
 
-        // FIX: Menggunakan Order ID yang lebih unik
         val order = Order(
-            id = System.currentTimeMillis().hashCode(),
+            id = System.currentTimeMillis(), // FIX: ID harus Long agar sesuai dengan Order.kt
             items = selectedItems.map { it.copy() },
             customerName = customerName,
             address = address,
@@ -123,10 +95,40 @@ class CartManager(private val context: Context) {
         currentOrders.add(order)
         prefs.edit().putString(KEY_ORDERS, gson.toJson(currentOrders)).apply()
 
-        // Hapus item yang sudah di-checkout dari keranjang
         val remainingItems = getCartItems().filter { !it.isSelected }.toMutableList()
         saveCartItems(remainingItems)
 
         return order
+    }
+
+    // ... (Fungsi helper lainnya)
+
+    fun getSelectedItems(): List<CartItem> {
+        return getCartItems().filter { it.isSelected }
+    }
+
+    fun getTotalPrice(): Double {
+        return getSelectedItems().sumOf { it.bouquet.price * it.quantity }
+    }
+
+    fun getFormattedTotal(): String {
+        val localeID = Locale("in", "ID")
+        val formatter = NumberFormat.getCurrencyInstance(localeID)
+        formatter.maximumFractionDigits = 0
+        return formatter.format(getTotalPrice())
+    }
+
+    fun getOrders(): MutableList<Order> {
+        val json = prefs.getString(KEY_ORDERS, null)
+        return if (json != null) {
+            val type = object : TypeToken<MutableList<Order>>() {}.type
+            gson.fromJson(json, type) ?: mutableListOf()
+        } else {
+            mutableListOf()
+        }
+    }
+
+    fun getCartCount(): Int {
+        return getCartItems().sumOf { it.quantity }
     }
 }

@@ -1,28 +1,37 @@
 package com.example.bucqetbunga.models
 
+import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
 data class Order(
-    val id: Int,
+    // FIX: Menggunakan Long untuk ID yang lebih umum
+    val id: Long,
     val items: List<CartItem>,
     val customerName: String,
     val address: String,
     val paymentMethod: String,
     val total: Double,
-    var status: String, // "Menunggu Pembayaran", "Diproses", "Dikirim", "Selesai"
+    val status: String,
     val orderDate: Long
 ) {
     fun getFormattedTotal(): String {
-        return "Rp. ${String.format("%,.0f", total)}"
+        val localeID = Locale("in", "ID")
+        val formatter = NumberFormat.getCurrencyInstance(localeID)
+        formatter.maximumFractionDigits = 0
+        return formatter.format(total)
     }
 
+    // FIX: Fungsi untuk format tanggal (Digunakan di OrderAdapter)
     fun getFormattedDate(): String {
-        val sdf = SimpleDateFormat("dd MMM yyyy, HH:mm", Locale("id", "ID"))
-        return sdf.format(Date(orderDate))
+        val date = Date(orderDate)
+        val format = SimpleDateFormat("dd MMM yyyy, HH:mm", Locale("in", "ID"))
+        return format.format(date)
     }
 
+    // FIX: Fungsi untuk membuat ringkasan item (Digunakan di OrderAdapter)
     fun getItemsSummary(): String {
-        return items.joinToString(", ") { "${it.bouquet.name} (${it.quantity}x)" }
+        // Gabungkan nama item dan kuantitasnya
+        return items.joinToString(", ") { "${it.bouquet.name} x${it.quantity}" }
     }
 }

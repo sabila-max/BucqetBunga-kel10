@@ -14,13 +14,13 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 class MainActivity : AppCompatActivity() {
 
     private lateinit var bottomNav: BottomNavigationView
-    private lateinit var cartManager: CartManager // <-- BARU: Deklarasi instance CartManager
+    private lateinit var cartManager: CartManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // FIX: Inisialisasi CartManager sebagai Class
+        // Inisialisasi CartManager sebagai Class
         cartManager = CartManager(this)
 
         bottomNav = findViewById(R.id.bottomNavigation)
