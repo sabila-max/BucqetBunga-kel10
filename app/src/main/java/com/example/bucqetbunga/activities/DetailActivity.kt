@@ -1,6 +1,6 @@
 package com.example.bucqetbunga.activities
 
-import android.content.Intent // <-- FIX: Import Intent yang Hilang
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
@@ -38,28 +38,50 @@ class DetailActivity : AppCompatActivity() {
             findViewById<TextView>(R.id.tvDetailPrice).text = bouquet.getFormattedPrice()
             findViewById<TextView>(R.id.tvDetailDesc).text = bouquet.description
 
+            // Tampilkan kategori juga
+            findViewById<TextView>(R.id.tvDetailCategory).text =
+                "Kategori: ${bouquet.category.name.replace("_", " ")}"
+
             val etNote = findViewById<EditText>(R.id.etNote)
 
             // Button Keranjang
             findViewById<Button>(R.id.btnAddToCartDetail).setOnClickListener {
-                val note = etNote.text.toString()
+                val note = etNote.text.toString().trim()
                 cartManager.addItemToCartWithNote(bouquet, note)
-                Toast.makeText(this, "Masuk Keranjang (+Catatan)", Toast.LENGTH_SHORT).show()
-                // FIX: Panggil update badge
-                (applicationContext as? MainActivity)?.updateCartBadge()
+                Toast.makeText(this, "${bouquet.name} ditambahkan ke keranjang!", Toast.LENGTH_SHORT).show()
+                // Tidak perlu panggil MainActivity.updateCartBadge() dari sini
             }
 
             // Button Pesan Sekarang
             findViewById<Button>(R.id.btnBuyNowDetail).setOnClickListener {
-                val note = etNote.text.toString()
+                val note = etNote.text.toString().trim()
                 cartManager.addItemToCartWithNote(bouquet, note)
 
+                Toast.makeText(this, "${bouquet.name} ditambahkan! Menuju keranjang...", Toast.LENGTH_SHORT).show()
+
                 // Pindah ke CartFragment di MainActivity
-                val intent = Intent(this, MainActivity::class.java)
-                intent.putExtra("open_cart", true) // Sinyal untuk membuka CartFragment
+                val intent = Intent(this, MainActivity::class.java).apply {
+                    flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                    putExtra("open_cart", true)
+                }
                 startActivity(intent)
                 finish()
             }
+
+            // Tombol Kembali
+            findViewById<ImageView>(R.id.ivBack).setOnClickListener {
+                onBackPressed()
+            }
+        } else {
+            Toast.makeText(this, "Produk tidak ditemukan", Toast.LENGTH_SHORT).show()
+            finish()
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Update badge jika kembali dari activity lain
+        val mainIntent = Intent(this, MainActivity::class.java)
+        mainIntent.putExtra("update_badge", true)
     }
 }

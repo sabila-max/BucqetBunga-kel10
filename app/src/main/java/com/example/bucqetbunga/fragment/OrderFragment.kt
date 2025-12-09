@@ -10,15 +10,16 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.bucqetbunga.R
 import com.example.bucqetbunga.adapters.OrderAdapter
-import com.example.bucqetbunga.utils.CartManager
+import com.example.bucqetbunga.utils.OrderManager
 
 class OrderFragment : Fragment() {
 
     private lateinit var rvOrders: RecyclerView
     private lateinit var adapter: OrderAdapter
     private lateinit var emptyState: LinearLayout
-    // 1. Tambah CartManager
-    private lateinit var cartManager: CartManager
+
+    // Ganti dari CartManager ke OrderManager
+    private lateinit var orderManager: OrderManager
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -27,8 +28,7 @@ class OrderFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_order, container, false)
 
-        // 2. Inisialisasi
-        cartManager = CartManager(requireContext())
+        orderManager = OrderManager(requireContext())
 
         initViews(view)
         setupRecyclerView()
@@ -48,15 +48,13 @@ class OrderFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        // 3. Panggil getOrders dari instance cartManager
-        adapter = OrderAdapter(requireContext(), cartManager.getOrders())
+        adapter = OrderAdapter(requireContext(), orderManager.getOrders())
         rvOrders.layoutManager = LinearLayoutManager(context)
         rvOrders.adapter = adapter
     }
 
     private fun updateUI() {
-        // 4. Panggil getOrders dari instance cartManager
-        val orders = cartManager.getOrders()
+        val orders = orderManager.getOrders()
 
         if (orders.isEmpty()) {
             emptyState.visibility = View.VISIBLE

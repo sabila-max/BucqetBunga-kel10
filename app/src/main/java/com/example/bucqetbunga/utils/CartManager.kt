@@ -4,6 +4,7 @@ import android.content.Context
 import com.example.bucqetbunga.models.Bouquet
 import com.example.bucqetbunga.models.CartItem
 import com.example.bucqetbunga.models.Order
+import com.example.bucqetbunga.models.OrderItem
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.text.NumberFormat
@@ -13,11 +14,10 @@ class CartManager(private val context: Context) {
 
     private val PREF_NAME = "CartPrefs"
     private val KEY_CART_ITEMS = "CartItems"
-    private val KEY_ORDERS = "Orders"
     private val prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
     private val gson = Gson()
 
-    // --- KERANJANG UTAMA (Persistence Logic) ---
+    // --- CART MANAGEMENT ---
 
     fun getCartItems(): MutableList<CartItem> {
         val json = prefs.getString(KEY_CART_ITEMS, null)
@@ -34,15 +34,13 @@ class CartManager(private val context: Context) {
         prefs.edit().putString(KEY_CART_ITEMS, json).apply()
     }
 
-    // FIX: Quick Add (Dari Dashboard)
     fun addItemToCart(bouquet: Bouquet) {
         val currentItems = getCartItems()
-        val existingItem = currentItems.find { it.bouquet.id == bouquet.id }
+        val existingItem = currentItems.find { it.bouquet.id == bouquet.id && it.note.isEmpty() }
 
         if (existingItem != null) {
             existingItem.quantity += 1
         } else {
-            // FIX: Menggunakan constructor CartItem yang lengkap (ID, Bouquet, Qty, isSelected, Note)
             currentItems.add(CartItem(
                 id = System.currentTimeMillis(),
                 bouquet = bouquet,
@@ -54,7 +52,6 @@ class CartManager(private val context: Context) {
         saveCartItems(currentItems)
     }
 
-    // FIX: Add With Note (Dari DetailActivity)
     fun addItemToCartWithNote(bouquet: Bouquet, note: String) {
         val currentItems = getCartItems()
         val existingItem = currentItems.find {
@@ -75,33 +72,36 @@ class CartManager(private val context: Context) {
         saveCartItems(currentItems)
     }
 
-    // FIX: Fungsi Checkout
-    fun createOrder(customerName: String, address: String, paymentMethod: String): Order {
-        val selectedItems = getSelectedItems()
-        val total = getTotalPrice()
+    fun updateCartItem(updatedItem: CartItem) {
+        val currentItems = getCartItems()
+        val index = currentItems.indexOfFirst { it.id == updatedItem.id }
 
-        val order = Order(
-            id = System.currentTimeMillis(), // FIX: ID harus Long agar sesuai dengan Order.kt
-            items = selectedItems.map { it.copy() },
-            customerName = customerName,
-            address = address,
-            paymentMethod = paymentMethod,
-            total = total,
-            status = "Menunggu Pembayaran",
-            orderDate = System.currentTimeMillis()
-        )
-
-        val currentOrders = getOrders()
-        currentOrders.add(order)
-        prefs.edit().putString(KEY_ORDERS, gson.toJson(currentOrders)).apply()
-
-        val remainingItems = getCartItems().filter { !it.isSelected }.toMutableList()
-        saveCartItems(remainingItems)
-
-        return order
+        if (index != -1) {
+            currentItems[index] = updatedItem
+            saveCartItems(currentItems)
+        }
     }
 
-    // ... (Fungsi helper lainnya)
+    fun removeFromCart(cartItemId: Long) {
+        val currentItems = getCartItems()
+        currentItems.removeAll { it.id == cartItemId }
+        saveCartItems(currentItems)
+    }
+
+    fun removeFromCartByBouquetId(bouquetId: Int) {
+        val currentItems = getCartItems()
+        currentItems.removeAll { it.bouquet.id == bouquetId }
+        saveCartItems(currentItems)
+    }
+
+    fun toggleItemSelection(cartItemId: Long) {
+        val currentItems = getCartItems()
+        val item = currentItems.find { it.id == cartItemId }
+        item?.let {
+            it.isSelected = !it.isSelected
+            saveCartItems(currentItems)
+        }
+    }
 
     fun getSelectedItems(): List<CartItem> {
         return getCartItems().filter { it.isSelected }
@@ -118,17 +118,58 @@ class CartManager(private val context: Context) {
         return formatter.format(getTotalPrice())
     }
 
-    fun getOrders(): MutableList<Order> {
-        val json = prefs.getString(KEY_ORDERS, null)
-        return if (json != null) {
-            val type = object : TypeToken<MutableList<Order>>() {}.type
-            gson.fromJson(json, type) ?: mutableListOf()
-        } else {
-            mutableListOf()
-        }
-    }
-
     fun getCartCount(): Int {
         return getCartItems().sumOf { it.quantity }
+    }
+
+    fun clearSelectedItems() {
+        val currentItems = getCartItems()
+        val remainingItems = currentItems.filter { !it.isSelected }.toMutableList()
+        saveCartItems(remainingItems)
+    }
+
+    fun clearCart() {
+        saveCartItems(mutableListOf())
+    }
+
+    // --- ORDER CREATION ---
+
+    fun createOrder(
+        customerName: String,
+        address: String,
+        phone: String,
+        note: String,
+        paymentMethod: String,
+        orderManager: OrderManager // Butuh OrderManager untuk generate ID
+    ): Order {
+        val selectedItems = getSelectedItems()
+        val total = getTotalPrice()
+
+        // Konversi CartItem ke OrderItem
+        val orderItems = selectedItems.map { cartItem ->
+            OrderItem(
+                bouquet = cartItem.bouquet,
+                quantity = cartItem.quantity,
+                note = cartItem.note
+            )
+        }
+
+        // Gunakan OrderManager untuk generate ID
+        val orderId = orderManager.generateOrderId()
+
+        val order = Order(
+            id = orderId,
+            items = orderItems,
+            customerName = customerName,
+            address = address,
+            phone = phone,
+            note = note,
+            orderDate = System.currentTimeMillis(),
+            totalAmount = total,
+            paymentMethod = paymentMethod,
+            status = "Menunggu Pembayaran"
+        )
+
+        return order
     }
 }

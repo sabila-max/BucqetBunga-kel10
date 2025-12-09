@@ -8,7 +8,7 @@ import com.example.bucqetbunga.fragments.DashboardFragment
 import com.example.bucqetbunga.fragments.CartFragment
 import com.example.bucqetbunga.fragments.OrderFragment
 import com.example.bucqetbunga.fragments.ProfileFragment
-import com.example.bucqetbunga.utils.CartManager // CartManager sekarang Class
+import com.example.bucqetbunga.utils.CartManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
@@ -46,7 +46,7 @@ class MainActivity : AppCompatActivity() {
 
         // Cek apakah ada intent untuk buka tab Pesanan
         val openOrders = intent.getBooleanExtra("open_orders", false)
-
+        val openCart = intent.getBooleanExtra("open_cart", false)
         if (savedInstanceState == null) {
             if (openOrders) {
                 // Buka tab Pesanan setelah checkout
@@ -54,6 +54,12 @@ class MainActivity : AppCompatActivity() {
                     .replace(R.id.fragmentContainer, OrderFragment())
                     .commit()
                 bottomNav.selectedItemId = R.id.nav_order
+            } else if (openCart) {
+                // Buka tab Keranjang
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.fragmentContainer, CartFragment())
+                    .commit()
+                bottomNav.selectedItemId = R.id.nav_cart
             } else {
                 // Default: buka Dashboard
                 supportFragmentManager.beginTransaction()

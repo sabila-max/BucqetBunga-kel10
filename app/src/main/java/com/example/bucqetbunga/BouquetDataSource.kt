@@ -21,7 +21,7 @@ object BouquetDataSource {
         Bouquet(13, "cloudy", "Boneka, Baloon, Full Snack", 225000.0, BouquetCategory.SNACK, R.drawable.cloudy),
         Bouquet(14, "lely", "Lily, Sedap Malam", 300000.0, BouquetCategory.FLOWER_VASE, R.drawable.lely),
         Bouquet(15, "mimi", "Orchid, Krisan, Pikok", 700000.0, BouquetCategory.ORCHID_VASE, R.drawable.mimi),
-        Bouquet(16, "caleofresh", "Red Rose, Aster, Krisan", 120000.0, BouquetCategory.FRESH, R.drawable.caleofresh),
+        Bouquet(16, "caleofresh", "Red Rose, Aster, Krisan", 120000.0, BouquetCategory.FRESH, R.drawable.caleonara),
         Bouquet(17, "money", "Money Buket by Request", 200000.0, BouquetCategory.MONEY_BQ, R.drawable.money),
         Bouquet(18, "kiara", "Boneka and Mix Flower", 300000.0, BouquetCategory.GRADUATION, R.drawable.kiara),
         Bouquet(19, "kiano", "Boneka and Dry Flower", 250000.0, BouquetCategory.GRADUATION, R.drawable.kiano),

@@ -1,6 +1,6 @@
 package com.example.bucqetbunga
 
-import android.content.Intent // FIX: Import Intent
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,7 +9,7 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.bucqetbunga.activities.DetailActivity // FIX: Import DetailActivity
+import com.example.bucqetbunga.activities.DetailActivity
 import com.example.bucqetbunga.models.Bouquet
 
 interface OnBouquetClickListener {
@@ -53,22 +53,30 @@ class BouquetAdapter(
 
         // 2. Navigasi ke Detail Activity (Klik pada gambar/card)
         holder.itemView.setOnClickListener {
-            val intent = Intent(holder.itemView.context, DetailActivity::class.java)
-            intent.putExtra("BOUQUET_ID", bouquet.id) // Kirim ID produk
+            val intent = Intent(holder.itemView.context, DetailActivity::class.java).apply {
+                // Kirim SEMUA data bouquet yang diperlukan
+                putExtra("BOUQUET_ID", bouquet.id)
+                putExtra("BOUQUET_NAME", bouquet.name)
+                putExtra("BOUQUET_DESCRIPTION", bouquet.description)
+                putExtra("BOUQUET_PRICE", bouquet.price)
+                putExtra("BOUQUET_CATEGORY", bouquet.category.name)
+                putExtra("BOUQUET_IMAGE_ID", bouquet.imageResId)
+            }
             holder.itemView.context.startActivity(intent)
         }
 
         // 3. Listener Tombol Pesan & Keranjang (Quick Add)
-        val clickListener = View.OnClickListener {
+        holder.orderButton.setOnClickListener {
+            listener.onOrderClick(bouquet)
+        }
+
+        holder.addToCartButton.setOnClickListener {
             listener.onOrderClick(bouquet)
         }
 
         // Pastikan tombol selalu aktif (Sesuai request "Selalu Tersedia")
         holder.orderButton.isEnabled = true
         holder.addToCartButton.isEnabled = true
-
-        holder.orderButton.setOnClickListener(clickListener)
-        holder.addToCartButton.setOnClickListener(clickListener)
     }
 
     override fun getItemCount(): Int = bouquets.size
