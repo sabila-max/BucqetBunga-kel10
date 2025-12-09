@@ -39,15 +39,16 @@ class CartAdapter(
         holder.tvProductName.text = cartItem.bouquet.name
         holder.tvProductPrice.text = cartItem.getFormattedTotal()
         holder.tvQuantity.text = cartItem.quantity.toString()
-        holder.cbSelect.isChecked = cartItem.isSelected
+        holder.ivProduct.setImageResource(cartItem.bouquet.imageResId)
 
-        // Checkbox listener
+        // FIX: Set checkbox tanpa trigger listener dulu
+        holder.cbSelect.setOnCheckedChangeListener(null)
+        holder.cbSelect.isChecked = cartItem.isSelected
         holder.cbSelect.setOnCheckedChangeListener { _, isChecked ->
             cartItem.isSelected = isChecked
             onItemChanged()
         }
 
-        // Decrease quantity
         holder.btnDecrease.setOnClickListener {
             if (cartItem.quantity > 1) {
                 cartItem.quantity--
@@ -57,12 +58,14 @@ class CartAdapter(
             }
         }
 
-        // Increase quantity
         holder.btnIncrease.setOnClickListener {
-            cartItem.quantity++
-            holder.tvQuantity.text = cartItem.quantity.toString()
-            holder.tvProductPrice.text = cartItem.getFormattedTotal()
-            onItemChanged()
+            // FIX: Tambahkan validasi stok
+            if (cartItem.quantity < cartItem.bouquet.stock) {
+                cartItem.quantity++
+                holder.tvQuantity.text = cartItem.quantity.toString()
+                holder.tvProductPrice.text = cartItem.getFormattedTotal()
+                onItemChanged()
+            }
         }
     }
 

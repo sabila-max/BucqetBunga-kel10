@@ -15,24 +15,28 @@ class OrderAdapter(
     private var orders: List<Order>
 ) : RecyclerView.Adapter<OrderAdapter.ViewHolder>() {
 
+    // ViewHolder menyimpan semua komponen UI dari item_order.xml
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val tvOrderId: TextView = view.findViewById(R.id.tvOrderId)
-        val tvOrderDate: TextView = view.findViewById(R.id.tvOrderDate)
-        val tvCustomerName: TextView = view.findViewById(R.id.tvCustomerName)
-        val tvItemsSummary: TextView = view.findViewById(R.id.tvItemsSummary)
-        val tvTotal: TextView = view.findViewById(R.id.tvTotal)
-        val tvStatus: TextView = view.findViewById(R.id.tvStatus)
-        val cardView: CardView = view.findViewById(R.id.cardOrder)
+        val tvOrderId: TextView = view.findViewById(R.id.tvOrderId)        // ID pesanan
+        val tvOrderDate: TextView = view.findViewById(R.id.tvOrderDate)    // Tanggal pesanan
+        val tvCustomerName: TextView = view.findViewById(R.id.tvCustomerName) // Nama pelanggan
+        val tvItemsSummary: TextView = view.findViewById(R.id.tvItemsSummary) // Ringkasan item
+        val tvTotal: TextView = view.findViewById(R.id.tvTotal)            // Total harga
+        val tvStatus: TextView = view.findViewById(R.id.tvStatus)          // Status pesanan
+        val cardView: CardView = view.findViewById(R.id.cardOrder)         // Card item
     }
 
+    // Membuat tampilan item dari layout item_order.xml
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(context).inflate(R.layout.item_order, parent, false)
         return ViewHolder(view)
     }
 
+    // Menghubungkan data pesanan ke tampilan item
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val order = orders[position]
 
+        // Mengisi teks ke setiap TextView
         holder.tvOrderId.text = "Order #${order.id}"
         holder.tvOrderDate.text = order.getFormattedDate()
         holder.tvCustomerName.text = order.customerName
@@ -40,7 +44,7 @@ class OrderAdapter(
         holder.tvTotal.text = order.getFormattedTotal()
         holder.tvStatus.text = order.status
 
-        // Set warna status
+        // Mengatur warna teks status berdasarkan nilai status
         when (order.status) {
             "Menunggu Pembayaran" -> holder.tvStatus.setTextColor(context.getColor(android.R.color.holo_orange_dark))
             "Diproses" -> holder.tvStatus.setTextColor(context.getColor(android.R.color.holo_blue_dark))
@@ -49,8 +53,10 @@ class OrderAdapter(
         }
     }
 
+    // Mengembalikan jumlah item dalam list
     override fun getItemCount(): Int = orders.size
 
+    // Memperbarui list pesanan dan menyegarkan tampilan RecyclerView
     fun updateList(newList: List<Order>) {
         orders = newList
         notifyDataSetChanged()

@@ -17,11 +17,13 @@ data class Order(
         return "Rp. ${String.format("%,.0f", total)}"
     }
 
+    // SimpleDateFormat untuk format tanggal Indonesia
     fun getFormattedDate(): String {
         val sdf = SimpleDateFormat("dd MMM yyyy, HH:mm", Locale("id", "ID"))
         return sdf.format(Date(orderDate))
     }
 
+    // Gabungkan semua nama produk jadi satu string
     fun getItemsSummary(): String {
         return items.joinToString(", ") { "${it.bouquet.name} (${it.quantity}x)" }
     }

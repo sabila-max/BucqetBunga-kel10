@@ -42,7 +42,7 @@ class CartFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         initViews(view)
         setupRecyclerView()
-        // updateUI dipanggil di onResume dan setelah setup RecyclerView
+        updateUI() // updateUI dipanggil di onResume dan setelah setup RecyclerView
     }
 
     override fun onResume() {
@@ -66,9 +66,10 @@ class CartFragment : Fragment() {
             (activity as? MainActivity)?.updateCartBadge()
         }
 
-        rvCart.layoutManager = LinearLayoutManager(context)
+        rvCart.layoutManager = LinearLayoutManager(context) // Vertical list
         rvCart.adapter = adapter
 
+        // Click listener untuk checkout
         btnCheckout.setOnClickListener {
             val selectedItems = cartManager.getSelectedItems()
             if (selectedItems.isNotEmpty()) {
@@ -84,12 +85,14 @@ class CartFragment : Fragment() {
         val cartItems = cartManager.getCartItems()
 
         if (cartItems.isEmpty()) {
+            // Tampilkan empty state
             emptyState.visibility = View.VISIBLE
             rvCart.visibility = View.GONE
             tvTotal.text = cartManager.getFormattedTotal() // Menampilkan Rp0
             btnCheckout.isEnabled = false
             btnCheckout.text = "Checkout"
         } else {
+            // Tampilkan empty state
             emptyState.visibility = View.GONE
             rvCart.visibility = View.VISIBLE
             adapter.updateList(cartItems)

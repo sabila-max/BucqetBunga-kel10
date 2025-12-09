@@ -3,12 +3,13 @@ package com.example.bucqetbunga.models
 import java.text.NumberFormat
 import java.util.*
 
-// FIX: Struktur disederhanakan untuk persistence. Bouquet.id digunakan sebagai pengenal.
+// Bouquet.id digunakan sebagai pengenal.
 data class CartItem(
     val bouquet: Bouquet,
     var quantity: Int = 1,
     var isSelected: Boolean = true // Default set True saat item ditambahkan
 ) {
+    // Hitung total harga (harga × quantity)
     fun getTotalPrice(): Double {
         return bouquet.price * quantity
     }

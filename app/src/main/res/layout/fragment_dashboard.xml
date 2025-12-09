@@ -36,7 +36,7 @@
 
     </RelativeLayout>
 
-    <!-- Kategori -->
+    <!-- Kategori Title -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -46,48 +46,21 @@
         android:textColor="#2D3142"
         android:layout_margin="16dp" />
 
-    <!-- Button Kategori -->
-    <LinearLayout
+    <!-- ✅ TAMBAHKAN INI: categoryContainer -->
+    <HorizontalScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:scrollbars="none"
         android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:gravity="center">
+        android:paddingEnd="16dp">
 
-        <Button
-            android:id="@+id/btnAll"
-            android:layout_width="0dp"
-            android:layout_height="40dp"
-            android:layout_weight="1"
-            android:layout_margin="4dp"
-            android:text="All"
-            android:textSize="12sp"
-            android:backgroundTint="#FF8FA1" />
+        <LinearLayout
+            android:id="@+id/categoryContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" />
 
-        <Button
-            android:id="@+id/btnArtificial"
-            android:layout_width="0dp"
-            android:layout_height="40dp"
-            android:layout_weight="1"
-            android:layout_margin="4dp"
-            android:text="Artificial"
-            android:textSize="12sp"
-            android:backgroundTint="@android:color/white"
-            android:textColor="#2D3142" />
-
-        <Button
-            android:id="@+id/btnSnack"
-            android:layout_width="0dp"
-            android:layout_height="40dp"
-            android:layout_weight="1"
-            android:layout_margin="4dp"
-            android:text="Snack"
-            android:textSize="12sp"
-            android:backgroundTint="@android:color/white"
-            android:textColor="#2D3142" />
-
-    </LinearLayout>
+    </HorizontalScrollView>
 
     <!-- RecyclerView untuk Produk -->
     <androidx.recyclerview.widget.RecyclerView

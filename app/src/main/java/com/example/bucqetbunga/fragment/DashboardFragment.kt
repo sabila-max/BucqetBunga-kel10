@@ -1,6 +1,6 @@
 package com.example.bucqetbunga.fragments
 
-import android.content.res.Resources // <-- IMPORT BARU
+import android.content.res.Resources
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -13,21 +13,21 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.bucqetbunga.R
-import com.example.bucqetbunga.BouquetAdapter
-import com.example.bucqetbunga.OnBouquetClickListener
+import com.example.bucqetbunga.adapters.BouquetAdapter
+import com.example.bucqetbunga.adapters.OnBouquetClickListener
 import com.example.bucqetbunga.data.BouquetDataSource
 import com.example.bucqetbunga.models.Bouquet
-import com.example.bucqetbunga.utils.CartManager // <-- Import CartManager (object)
-import com.example.bucqetbunga.BouquetCategory // Import Enum Category
-import com.example.bucqetbunga.activities.MainActivity // <-- Import MainActivity untuk badge
+import com.example.bucqetbunga.utils.CartManager
+import com.example.bucqetbunga.BouquetCategory
+import com.example.bucqetbunga.activities.MainActivity
 
 class DashboardFragment : Fragment(), OnBouquetClickListener {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: BouquetAdapter
     private lateinit var categoryContainer: LinearLayout
+    private lateinit var cartManager: CartManager
 
-    // Simpan semua data buket yang tidak difilter
     private val allBouquets = BouquetDataSource.getBouquets()
 
     override fun onCreateView(
@@ -40,42 +40,28 @@ class DashboardFragment : Fragment(), OnBouquetClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // HAPUS: private lateinit var cartManager: CartManager
-        // HAPUS: cartManager = CartManager(requireContext()) karena CartManager adalah OBJECT (singleton)
-
-        // Pastikan ID 'categoryContainer' ada di fragment_dashboard.xml
+        cartManager = CartManager(requireContext())
         categoryContainer = view.findViewById(R.id.categoryContainer)
 
         setupRecyclerView()
         createCategoryButtons()
-
-        // Tampilkan semua produk secara default saat pertama kali dimuat
         filterBouquets(null)
     }
 
     private fun setupRecyclerView() {
         recyclerView = view?.findViewById(R.id.rvBouquets)!!
         recyclerView.layoutManager = LinearLayoutManager(context)
-
-        // Inisialisasi adapter dengan daftar lengkap data (gunakan .toMutableList() untuk kompatibilitas updateList)
         adapter = BouquetAdapter(allBouquets.toMutableList(), this)
         recyclerView.adapter = adapter
     }
 
-    // --- FUNGSI UTILITY HILANG (dpToPx) DITAMBAHKAN DI SINI ---
-    // Menyediakan fungsi konversi dp ke px, mengatasi error 'unresolved reference: dpToPx'
     private fun Int.dpToPx(resources: Resources): Int =
         (this * resources.displayMetrics.density + 0.5f).toInt()
 
-    // --- FUNGSI PEMBUATAN TOMBOL KATEGORI (MENGATASI UNRESOLVED REFERENCES) ---
     private fun createCategoryButtons() {
         categoryContainer.removeAllViews()
-
-        // 1. Tambahkan tombol "Semua"
         addCategoryButton("Semua", null)
-
-        // 2. Tambahkan tombol untuk setiap kategori
-        BouquetCategory.values().forEach { category ->
+        BouquetCategory.entries.forEach { category ->
             addCategoryButton(category.name.replace("_", " "), category)
         }
     }
@@ -92,12 +78,9 @@ class DashboardFragment : Fragment(), OnBouquetClickListener {
             textSize = 12f
             setTag(category)
 
-            // Atur gaya awal
             val isSelected = category == null
-            // Pastikan Anda telah membuat resource category_button_selected/default
-            setBackgroundResource(if (isSelected) R.drawable.category_button_selected else R.drawable.category_button_default)
-            // Asumsi: R.color.dark_text_color ada, jika tidak, ganti dengan Color.BLACK
-            setTextColor(if (isSelected) Color.WHITE else resources.getColor(R.color.dark_text_color, null))
+            setBackgroundColor(if (isSelected) Color.parseColor("#6200EE") else Color.parseColor("#E0E0E0"))
+            setTextColor(if (isSelected) Color.WHITE else Color.parseColor("#333333"))
 
             setOnClickListener {
                 handleCategoryClick(this)
@@ -109,18 +92,15 @@ class DashboardFragment : Fragment(), OnBouquetClickListener {
     private fun handleCategoryClick(clickedButton: Button) {
         val selectedCategory = clickedButton.tag as BouquetCategory?
 
-        // Reset gaya semua tombol
         for (i in 0 until categoryContainer.childCount) {
             val child = categoryContainer.getChildAt(i) as Button
-            child.setBackgroundResource(R.drawable.category_button_default)
-            child.setTextColor(resources.getColor(R.color.dark_text_color, null))
+            child.setBackgroundColor(Color.parseColor("#E0E0E0"))
+            child.setTextColor(Color.parseColor("#333333"))
         }
 
-        // Atur gaya tombol yang diklik
-        clickedButton.setBackgroundResource(R.drawable.category_button_selected)
+        clickedButton.setBackgroundColor(Color.parseColor("#6200EE"))
         clickedButton.setTextColor(Color.WHITE)
 
-        // Terapkan filter
         filterBouquets(selectedCategory)
     }
 
@@ -130,18 +110,12 @@ class DashboardFragment : Fragment(), OnBouquetClickListener {
         } else {
             allBouquets.filter { it.category == category }
         }
-
         adapter.updateList(filteredList)
     }
 
-    // Implementasi dari OnBouquetClickListener
     override fun onOrderClick(bouquet: Bouquet) {
-        // PANGGIL CARTMANAGER LANGSUNG SEBAGAI OBJECT
-        CartManager.addToCart(bouquet) // <-- KOREKSI PENGGUNAAN OBJECT MANAGER
-
-        Toast.makeText(context, "${bouquet.name} berhasil ditambahkan ke keranjang!", Toast.LENGTH_SHORT).show()
-
-        // Panggil fungsi update Cart Badge di MainActivity
+        cartManager.addItemToCart(bouquet)
+        Toast.makeText(requireContext(), "${bouquet.name} berhasil ditambahkan ke keranjang!", Toast.LENGTH_SHORT).show()
         (activity as? MainActivity)?.updateCartBadge()
     }
 }

@@ -2,6 +2,7 @@ package com.example.bucqetbunga.activities
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
@@ -22,14 +23,27 @@ class CheckoutActivity : AppCompatActivity() {
     private lateinit var etAlamat: EditText
     private lateinit var rgPayment: RadioGroup
     private lateinit var btnOrder: Button
+    private lateinit var cartManager: CartManager
+
+    companion object {
+        private const val TAG = "CheckoutActivity"
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_checkout)
+        Log.d(TAG, "onCreate called")
 
-        initViews()
-        loadCheckoutData()
-        setupListeners()
+        try {
+            setContentView(R.layout.activity_checkout)
+            cartManager = CartManager(this)
+
+            initViews()
+            loadCheckoutData()
+            setupListeners()
+        } catch (e: Exception) {
+            Log.e(TAG, "Error in onCreate: ${e.message}", e)
+            Toast.makeText(this, "Terjadi kesalahan: ${e.message}", Toast.LENGTH_LONG).show()
+        }
     }
 
     private fun initViews() {
@@ -43,12 +57,22 @@ class CheckoutActivity : AppCompatActivity() {
     }
 
     private fun loadCheckoutData() {
-        val selectedItems = CartManager.getSelectedItems()
+        try {
+            val selectedItems = cartManager.getSelectedItems()
+            Log.d(TAG, "Selected items count: ${selectedItems.size}")
 
-        if (selectedItems.isNotEmpty()) {
-            val firstItem = selectedItems[0]
-            tvProductName.text = firstItem.bouquet.name
-            tvProductPrice.text = CartManager.getFormattedTotal()
+            if (selectedItems.isNotEmpty()) {
+                val itemNames = selectedItems.joinToString(", ") { it.bouquet.name }
+                tvProductName.text = itemNames
+                tvProductPrice.text = cartManager.getFormattedTotal()
+                Log.d(TAG, "Checkout data loaded: $itemNames")
+            } else {
+                Log.w(TAG, "No selected items found")
+                Toast.makeText(this, "Tidak ada item yang dipilih", Toast.LENGTH_SHORT).show()
+                finish()
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error loading checkout data: ${e.message}", e)
         }
     }
 
@@ -63,37 +87,46 @@ class CheckoutActivity : AppCompatActivity() {
     }
 
     private fun processOrder() {
-        val customerName = etNoPesanan.text.toString().trim()
-        val alamat = etAlamat.text.toString().trim()
-        val selectedPaymentId = rgPayment.checkedRadioButtonId
+        try {
+            val customerName = etNoPesanan.text.toString().trim()
+            val alamat = etAlamat.text.toString().trim()
+            val selectedPaymentId = rgPayment.checkedRadioButtonId
 
-        // Validasi
-        if (customerName.isEmpty() || alamat.isEmpty()) {
-            Toast.makeText(this, "Harap isi semua field", Toast.LENGTH_SHORT).show()
-            return
+            // Validasi
+            if (customerName.isEmpty() || alamat.isEmpty()) {
+                Toast.makeText(this, "Harap isi semua field", Toast.LENGTH_SHORT).show()
+                return
+            }
+
+            if (selectedPaymentId == -1) {
+                Toast.makeText(this, "Pilih metode pembayaran", Toast.LENGTH_SHORT).show()
+                return
+            }
+
+            val paymentMethod = findViewById<RadioButton>(selectedPaymentId).text.toString()
+
+            Log.d(TAG, "Processing order for: $customerName")
+
+            // Buat pesanan
+            val order = cartManager.createOrder(customerName, alamat, paymentMethod)
+
+            Log.d(TAG, "Order created successfully: ${order.id}")
+
+            Toast.makeText(
+                this,
+                "Pesanan berhasil dibuat!\nTotal: ${order.getFormattedTotal()}\nPembayaran: $paymentMethod",
+                Toast.LENGTH_LONG
+            ).show()
+
+            // Kembali ke MainActivity dan pindah ke tab Pesanan
+            val intent = Intent(this, MainActivity::class.java)
+            intent.putExtra("open_orders", true)
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+            startActivity(intent)
+            finish()
+        } catch (e: Exception) {
+            Log.e(TAG, "Error processing order: ${e.message}", e)
+            Toast.makeText(this, "Gagal membuat pesanan: ${e.message}", Toast.LENGTH_LONG).show()
         }
-
-        if (selectedPaymentId == -1) {
-            Toast.makeText(this, "Pilih metode pembayaran", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        val paymentMethod = findViewById<RadioButton>(selectedPaymentId).text.toString()
-
-        // Buat pesanan
-        val order = CartManager.createOrder(customerName, alamat, paymentMethod)
-
-        Toast.makeText(
-            this,
-            "Pesanan berhasil dibuat!\nTotal: ${order.getFormattedTotal()}\nPembayaran: $paymentMethod",
-            Toast.LENGTH_LONG
-        ).show()
-
-        // Kembali ke MainActivity dan pindah ke tab Pesanan
-        val intent = Intent(this, MainActivity::class.java)
-        intent.putExtra("open_orders", true)
-        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-        startActivity(intent)
-        finish()
     }
 }

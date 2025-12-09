@@ -3,18 +3,17 @@ package com.example.bucqetbunga.utils
 import android.content.Context
 import com.example.bucqetbunga.models.Bouquet
 import com.example.bucqetbunga.models.CartItem
-import com.example.bucqetbunga.models.Order // Asumsi Order model ada
+import com.example.bucqetbunga.models.Order
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.text.NumberFormat
 import java.util.*
 
-// FIX: Diubah dari object menjadi CLASS untuk menggunakan Context (SharedPreferences)
 class CartManager(private val context: Context) {
 
     private val PREF_NAME = "CartPrefs"
     private val KEY_CART_ITEMS = "CartItems"
-    private val KEY_ORDERS = "Orders" // Untuk OrderFragment
+    private val KEY_ORDERS = "Orders"
     private val prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
     private val gson = Gson()
 
@@ -44,14 +43,12 @@ class CartManager(private val context: Context) {
         if (existingItem != null) {
             existingItem.quantity += 1
         } else {
-            // FIX: Menggunakan CartItem baru
             currentItems.add(CartItem(bouquet = bouquet, quantity = 1, isSelected = true))
         }
 
         saveCartItems(currentItems)
     }
 
-    // Dipanggil oleh Adapter saat quantity atau isSelected berubah
     fun updateItem(cartItem: CartItem) {
         val currentItems = getCartItems()
         val index = currentItems.indexOfFirst { it.bouquet.id == cartItem.bouquet.id }
@@ -90,7 +87,7 @@ class CartManager(private val context: Context) {
         return getCartItems().sumOf { it.quantity }
     }
 
-    // --- LOGIKA ORDER/PESANAN (DIPERTAHANKAN UNTUK KONSISTENSI) ---
+    // --- LOGIKA ORDER/PESANAN ---
 
     fun getOrders(): MutableList<Order> {
         val json = prefs.getString(KEY_ORDERS, null)
@@ -102,12 +99,10 @@ class CartManager(private val context: Context) {
         }
     }
 
-    // FIX: Logika Checkout: membuat pesanan dan menghapus item terpilih dari keranjang
     fun createOrder(customerName: String, address: String, paymentMethod: String): Order {
         val selectedItems = getSelectedItems()
         val total = getTotalPrice()
 
-        // FIX: Menggunakan Order ID yang lebih unik
         val order = Order(
             id = System.currentTimeMillis().hashCode(),
             items = selectedItems.map { it.copy() },
