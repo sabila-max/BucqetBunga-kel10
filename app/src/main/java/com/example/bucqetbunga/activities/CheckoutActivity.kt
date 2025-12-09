@@ -1,132 +1,275 @@
 package com.example.bucqetbunga.activities
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
-import android.util.Log
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.RadioButton
-import android.widget.RadioGroup
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import com.example.bucqetbunga.R
 import com.example.bucqetbunga.utils.CartManager
+import com.example.bucqetbunga.utils.OrderManager
 
 class CheckoutActivity : AppCompatActivity() {
 
+    private lateinit var cartManager: CartManager
+    private lateinit var orderManager: OrderManager
+
     private lateinit var ivBack: ImageView
     private lateinit var tvProductName: TextView
-    private lateinit var tvProductPrice: TextView
-    private lateinit var etNoPesanan: EditText
+    private lateinit var tvTotal: TextView
+    private lateinit var etNamaPenerima: EditText
     private lateinit var etAlamat: EditText
+    private lateinit var etNoHP: EditText
+    private lateinit var etCatatan: EditText
     private lateinit var rgPayment: RadioGroup
     private lateinit var btnOrder: Button
-    private lateinit var cartManager: CartManager
+    private lateinit var btnWhatsApp: Button
 
-    companion object {
-        private const val TAG = "CheckoutActivity"
-    }
+    private var lastOrderId: String = ""
+    private var orderCompleted = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d(TAG, "onCreate called")
+        setContentView(R.layout.activity_checkout)
 
-        try {
-            setContentView(R.layout.activity_checkout)
-            cartManager = CartManager(this)
+        // Inisialisasi managers
+        cartManager = CartManager(this)
+        orderManager = OrderManager(this)
 
-            initViews()
-            loadCheckoutData()
-            setupListeners()
-        } catch (e: Exception) {
-            Log.e(TAG, "Error in onCreate: ${e.message}", e)
-            Toast.makeText(this, "Terjadi kesalahan: ${e.message}", Toast.LENGTH_LONG).show()
-        }
+        initViews()
+        loadCheckoutData()
+        setupListeners()
+
+        // PERBAIKAN: Setup OnBackPressedCallback untuk Android baru
+        setupOnBackPressed()
     }
 
     private fun initViews() {
         ivBack = findViewById(R.id.ivBack)
         tvProductName = findViewById(R.id.tvProductName)
-        tvProductPrice = findViewById(R.id.tvProductPrice)
-        etNoPesanan = findViewById(R.id.etNoPesanan)
+        tvTotal = findViewById(R.id.tvTotal)
+        etNamaPenerima = findViewById(R.id.etNamaPenerima)
         etAlamat = findViewById(R.id.etAlamat)
+        etNoHP = findViewById(R.id.etNoHP)
+        etCatatan = findViewById(R.id.etCatatan)
         rgPayment = findViewById(R.id.rgPayment)
         btnOrder = findViewById(R.id.btnOrder)
+        btnWhatsApp = findViewById(R.id.btnWhatsApp)
+
+        // Awalnya nonaktif WhatsApp button
+        btnWhatsApp.isEnabled = false
+        btnWhatsApp.alpha = 0.5f
+    }
+
+    private fun setupOnBackPressed() {
+        // PERBAIKAN: Menggunakan OnBackPressedCallback yang baru
+        val callback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (orderCompleted) {
+                    // Jika order sudah selesai, tampilkan dialog konfirmasi
+                    showExitConfirmation()
+                } else {
+                    // Jika belum checkout, langsung kembali
+                    finish()
+                }
+            }
+        }
+
+        // Tambahkan callback ke dispatcher
+        onBackPressedDispatcher.addCallback(this, callback)
+    }
+
+    private fun showExitConfirmation() {
+        val dialog = android.app.AlertDialog.Builder(this)
+            .setTitle("Keluar")
+            .setMessage("Pesanan sudah berhasil. Apakah Anda yakin ingin keluar?")
+            .setPositiveButton("Ya") { _, _ ->
+                finish()
+            }
+            .setNegativeButton("Tidak", null)
+            .create()
+
+        dialog.show()
     }
 
     private fun loadCheckoutData() {
-        try {
-            val selectedItems = cartManager.getSelectedItems()
-            Log.d(TAG, "Selected items count: ${selectedItems.size}")
+        val selectedItems = cartManager.getSelectedItems()
 
-            if (selectedItems.isNotEmpty()) {
-                val itemNames = selectedItems.joinToString(", ") { it.bouquet.name }
-                tvProductName.text = itemNames
-                tvProductPrice.text = cartManager.getFormattedTotal()
-                Log.d(TAG, "Checkout data loaded: $itemNames")
-            } else {
-                Log.w(TAG, "No selected items found")
-                Toast.makeText(this, "Tidak ada item yang dipilih", Toast.LENGTH_SHORT).show()
-                finish()
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "Error loading checkout data: ${e.message}", e)
+        if (selectedItems.isEmpty()) {
+            Toast.makeText(this, "Keranjang kosong", Toast.LENGTH_SHORT).show()
+            finish()
+            return
         }
+
+        if (selectedItems.size == 1) {
+            tvProductName.text = selectedItems[0].bouquet.name
+        } else {
+            tvProductName.text = "${selectedItems[0].bouquet.name} dan ${selectedItems.size - 1} lainnya"
+        }
+
+        tvTotal.text = cartManager.getFormattedTotal()
     }
 
     private fun setupListeners() {
         ivBack.setOnClickListener {
-            finish()
+            if (orderCompleted) {
+                showExitConfirmation()
+            } else {
+                finish()
+            }
         }
 
         btnOrder.setOnClickListener {
             processOrder()
         }
+
+        btnWhatsApp.setOnClickListener {
+            if (lastOrderId.isNotEmpty()) {
+                orderManager.getOrderById(lastOrderId)?.let { order ->
+                    sendToWhatsApp(order)
+                } ?: run {
+                    Toast.makeText(this, "Order tidak ditemukan", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
     }
 
     private fun processOrder() {
-        try {
-            val customerName = etNoPesanan.text.toString().trim()
-            val alamat = etAlamat.text.toString().trim()
-            val selectedPaymentId = rgPayment.checkedRadioButtonId
+        // Validasi input
+        val customerName = etNamaPenerima.text.toString().trim()
+        val address = etAlamat.text.toString().trim()
+        val phone = etNoHP.text.toString().trim()
+        val note = etCatatan.text.toString().trim()
+        val selectedPaymentId = rgPayment.checkedRadioButtonId
 
-            // Validasi
-            if (customerName.isEmpty() || alamat.isEmpty()) {
-                Toast.makeText(this, "Harap isi semua field", Toast.LENGTH_SHORT).show()
-                return
-            }
+        if (customerName.isEmpty()) {
+            etNamaPenerima.error = "Nama penerima harus diisi"
+            etNamaPenerima.requestFocus()
+            return
+        }
 
-            if (selectedPaymentId == -1) {
-                Toast.makeText(this, "Pilih metode pembayaran", Toast.LENGTH_SHORT).show()
-                return
-            }
+        if (address.isEmpty()) {
+            etAlamat.error = "Alamat harus diisi"
+            etAlamat.requestFocus()
+            return
+        }
 
-            val paymentMethod = findViewById<RadioButton>(selectedPaymentId).text.toString()
+        if (phone.isEmpty()) {
+            etNoHP.error = "Nomor HP harus diisi"
+            etNoHP.requestFocus()
+            return
+        }
 
-            Log.d(TAG, "Processing order for: $customerName")
+        if (selectedPaymentId == -1) {
+            Toast.makeText(this, "Pilih metode pembayaran", Toast.LENGTH_SHORT).show()
+            return
+        }
 
-            // Buat pesanan
-            val order = cartManager.createOrder(customerName, alamat, paymentMethod)
+        val paymentMethod = findViewById<RadioButton>(selectedPaymentId).text.toString()
 
-            Log.d(TAG, "Order created successfully: ${order.id}")
+        // Buat order
+        val order = cartManager.createOrder(
+            customerName = customerName,
+            address = address,
+            phone = phone,
+            note = note,
+            paymentMethod = paymentMethod,
+            orderManager = orderManager
+        )
 
-            Toast.makeText(
-                this,
-                "Pesanan berhasil dibuat!\nTotal: ${order.getFormattedTotal()}\nPembayaran: $paymentMethod",
-                Toast.LENGTH_LONG
-            ).show()
+        // Simpan order ke OrderManager
+        orderManager.saveOrder(order)
 
-            // Kembali ke MainActivity dan pindah ke tab Pesanan
-            val intent = Intent(this, MainActivity::class.java)
-            intent.putExtra("open_orders", true)
-            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-            startActivity(intent)
-            finish()
-        } catch (e: Exception) {
-            Log.e(TAG, "Error processing order: ${e.message}", e)
-            Toast.makeText(this, "Gagal membuat pesanan: ${e.message}", Toast.LENGTH_LONG).show()
+        // Simpan ID order untuk WhatsApp
+        lastOrderId = order.id
+
+        // Hapus item yang sudah dipesan dari keranjang
+        cartManager.clearSelectedItems()
+
+        // Tampilkan konfirmasi
+        Toast.makeText(this,
+            "Pesanan berhasil!\nID: #${order.id.takeLast(6)}",
+            Toast.LENGTH_LONG
+        ).show()
+
+        // Update UI
+        btnOrder.text = "✅ Pesanan Berhasil"
+        btnOrder.isEnabled = false
+        btnWhatsApp.isEnabled = true
+        btnWhatsApp.alpha = 1f
+        orderCompleted = true
+
+        // Nonaktifkan input
+        etNamaPenerima.isEnabled = false
+        etAlamat.isEnabled = false
+        etNoHP.isEnabled = false
+        etCatatan.isEnabled = false
+        rgPayment.isEnabled = false
+
+        for (i in 0 until rgPayment.childCount) {
+            rgPayment.getChildAt(i).isEnabled = false
         }
     }
+
+    private fun sendToWhatsApp(order: com.example.bucqetbunga.models.Order) {
+        val message = buildOrderMessage(order)
+        val phoneNumber = "6281234567890" // Ganti dengan nomor admin toko bunga
+
+        val url = "https://wa.me/$phoneNumber?text=${Uri.encode(message)}"
+
+        try {
+            val intent = Intent(Intent.ACTION_VIEW)
+            intent.data = Uri.parse(url)
+            startActivity(intent)
+        } catch (e: Exception) {
+            Toast.makeText(this,
+                "WhatsApp tidak terinstall atau terjadi error",
+                Toast.LENGTH_SHORT
+            ).show()
+
+            // Alternatif: copy ke clipboard
+            val clipboard = getSystemService(CLIPBOARD_SERVICE) as android.content.ClipboardManager
+            val clip = android.content.ClipData.newPlainText("Order Message", message)
+            clipboard.setPrimaryClip(clip)
+
+            Toast.makeText(this,
+                "Pesan order disalin ke clipboard",
+                Toast.LENGTH_LONG
+            ).show()
+        }
+    }
+
+    private fun buildOrderMessage(order: com.example.bucqetbunga.models.Order): String {
+        val itemsText = order.items.joinToString("\n") { item ->
+            "• ${item.bouquet.name} x${item.quantity} = ${item.getFormattedSubtotal()}"
+        }
+
+        return """
+            Halo, saya ingin memesan buket bunga:
+            
+            📋 *DETAIL PESANAN*
+            ID Order: ${order.id}
+            Tanggal: ${order.getFormattedDate()}
+            
+            👤 *DATA PENERIMA*
+            Nama: ${order.customerName}
+            Alamat: ${order.address}
+            No. HP: ${order.phone}
+            Catatan: ${if (order.note.isEmpty()) "-" else order.note}
+            
+            🛍️ *ITEM PESANAN:*
+            $itemsText
+            
+            💰 *TOTAL PEMBAYARAN:*
+            ${order.getFormattedTotal()}
+            
+            💳 *METODE PEMBAYARAN:*
+            ${order.paymentMethod}
+            
+            Mohon konfirmasi ketersediaan dan total yang harus dibayar.
+            Terima kasih!
+        """.trimIndent()
+    }
+
 }

@@ -4,6 +4,7 @@ import android.content.Context
 import com.example.bucqetbunga.models.Bouquet
 import com.example.bucqetbunga.models.CartItem
 import com.example.bucqetbunga.models.Order
+import com.example.bucqetbunga.models.OrderItem
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.text.NumberFormat
@@ -13,11 +14,10 @@ class CartManager(private val context: Context) {
 
     private val PREF_NAME = "CartPrefs"
     private val KEY_CART_ITEMS = "CartItems"
-    private val KEY_ORDERS = "Orders"
     private val prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
     private val gson = Gson()
 
-    // --- UTILITIES PERSISTENSI ---
+    // --- CART MANAGEMENT ---
 
     fun getCartItems(): MutableList<CartItem> {
         val json = prefs.getString(KEY_CART_ITEMS, null)
@@ -29,39 +29,78 @@ class CartManager(private val context: Context) {
         }
     }
 
-    fun saveCartItems(items: MutableList<CartItem>) {
+    private fun saveCartItems(items: MutableList<CartItem>) {
         val json = gson.toJson(items)
         prefs.edit().putString(KEY_CART_ITEMS, json).apply()
     }
 
-    // --- LOGIKA KERANJANG ---
-
     fun addItemToCart(bouquet: Bouquet) {
         val currentItems = getCartItems()
-        val existingItem = currentItems.find { it.bouquet.id == bouquet.id }
+        val existingItem = currentItems.find { it.bouquet.id == bouquet.id && it.note.isEmpty() }
 
         if (existingItem != null) {
             existingItem.quantity += 1
         } else {
-            currentItems.add(CartItem(bouquet = bouquet, quantity = 1, isSelected = true))
+            currentItems.add(CartItem(
+                id = System.currentTimeMillis(),
+                bouquet = bouquet,
+                quantity = 1,
+                isSelected = true,
+                note = ""
+            ))
         }
-
         saveCartItems(currentItems)
     }
 
-    fun updateItem(cartItem: CartItem) {
+    fun addItemToCartWithNote(bouquet: Bouquet, note: String) {
         val currentItems = getCartItems()
-        val index = currentItems.indexOfFirst { it.bouquet.id == cartItem.bouquet.id }
+        val existingItem = currentItems.find {
+            it.bouquet.id == bouquet.id && it.note == note
+        }
+
+        if (existingItem != null) {
+            existingItem.quantity += 1
+        } else {
+            currentItems.add(CartItem(
+                id = System.currentTimeMillis(),
+                bouquet = bouquet,
+                quantity = 1,
+                isSelected = true,
+                note = note
+            ))
+        }
+        saveCartItems(currentItems)
+    }
+
+    fun updateCartItem(updatedItem: CartItem) {
+        val currentItems = getCartItems()
+        val index = currentItems.indexOfFirst { it.id == updatedItem.id }
+
         if (index != -1) {
-            currentItems[index] = cartItem
+            currentItems[index] = updatedItem
             saveCartItems(currentItems)
         }
     }
 
-    fun removeItemFromCart(cartItem: CartItem) {
+    fun removeFromCart(cartItemId: Long) {
         val currentItems = getCartItems()
-        currentItems.removeIf { it.bouquet.id == cartItem.bouquet.id }
+        currentItems.removeAll { it.id == cartItemId }
         saveCartItems(currentItems)
+    }
+
+    fun removeFromCartByBouquetId(bouquetId: Int) {
+        val currentItems = getCartItems()
+        currentItems.removeAll { it.bouquet.id == bouquetId }
+        saveCartItems(currentItems)
+    }
+
+    fun toggleItemSelection(cartItemId: Long) {
+        val currentItems = getCartItems()
+        val item = currentItems.find { it.id == cartItemId }
+        item?.let {
+            it.isSelected = !it.isSelected
+            saveCartItems(currentItems)
+        }
     }
 
     fun getSelectedItems(): List<CartItem> {
@@ -69,58 +108,67 @@ class CartManager(private val context: Context) {
     }
 
     fun getTotalPrice(): Double {
-        return getCartItems().filter { it.isSelected }.sumOf { it.getTotalPrice() }
+        return getSelectedItems().sumOf { it.bouquet.price * it.quantity }
     }
 
     fun getFormattedTotal(): String {
-        val indonesiaLocale = Locale.forLanguageTag("in-ID")
-        val format = NumberFormat.getCurrencyInstance(indonesiaLocale)
-        format.maximumFractionDigits = 0
-        return format.format(getTotalPrice())
-    }
-
-    fun clearCart() {
-        prefs.edit().remove(KEY_CART_ITEMS).apply()
+        val localeID = Locale("in", "ID")
+        val formatter = NumberFormat.getCurrencyInstance(localeID)
+        formatter.maximumFractionDigits = 0
+        return formatter.format(getTotalPrice())
     }
 
     fun getCartCount(): Int {
         return getCartItems().sumOf { it.quantity }
     }
 
-    // --- LOGIKA ORDER/PESANAN ---
-
-    fun getOrders(): MutableList<Order> {
-        val json = prefs.getString(KEY_ORDERS, null)
-        return if (json != null) {
-            val type = object : TypeToken<MutableList<Order>>() {}.type
-            gson.fromJson(json, type) ?: mutableListOf()
-        } else {
-            mutableListOf()
-        }
+    fun clearSelectedItems() {
+        val currentItems = getCartItems()
+        val remainingItems = currentItems.filter { !it.isSelected }.toMutableList()
+        saveCartItems(remainingItems)
     }
 
-    fun createOrder(customerName: String, address: String, paymentMethod: String): Order {
+    fun clearCart() {
+        saveCartItems(mutableListOf())
+    }
+
+    // --- ORDER CREATION ---
+
+    fun createOrder(
+        customerName: String,
+        address: String,
+        phone: String,
+        note: String,
+        paymentMethod: String,
+        orderManager: OrderManager // Butuh OrderManager untuk generate ID
+    ): Order {
         val selectedItems = getSelectedItems()
         val total = getTotalPrice()
 
+        // Konversi CartItem ke OrderItem
+        val orderItems = selectedItems.map { cartItem ->
+            OrderItem(
+                bouquet = cartItem.bouquet,
+                quantity = cartItem.quantity,
+                note = cartItem.note
+            )
+        }
+
+        // Gunakan OrderManager untuk generate ID
+        val orderId = orderManager.generateOrderId()
+
         val order = Order(
-            id = System.currentTimeMillis().hashCode(),
-            items = selectedItems.map { it.copy() },
+            id = orderId,
+            items = orderItems,
             customerName = customerName,
             address = address,
+            phone = phone,
+            note = note,
+            orderDate = System.currentTimeMillis(),
+            totalAmount = total,
             paymentMethod = paymentMethod,
-            total = total,
-            status = "Menunggu Pembayaran",
-            orderDate = System.currentTimeMillis()
+            status = "Menunggu Pembayaran"
         )
-
-        val currentOrders = getOrders()
-        currentOrders.add(order)
-        prefs.edit().putString(KEY_ORDERS, gson.toJson(currentOrders)).apply()
-
-        // Hapus item yang sudah di-checkout dari keranjang
-        val remainingItems = getCartItems().filter { !it.isSelected }.toMutableList()
-        saveCartItems(remainingItems)
 
         return order
     }

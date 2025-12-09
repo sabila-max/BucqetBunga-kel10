@@ -1,13 +1,15 @@
-package com.example.bucqetbunga.adapters
+package com.example.bucqetbunga
 
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.bucqetbunga.R
+import com.example.bucqetbunga.activities.DetailActivity
 import com.example.bucqetbunga.models.Bouquet
 
 interface OnBouquetClickListener {
@@ -15,7 +17,7 @@ interface OnBouquetClickListener {
 }
 
 class BouquetAdapter(
-    private var bouquets: List<Bouquet>,
+    private val bouquets: MutableList<Bouquet>,
     private val listener: OnBouquetClickListener
 ) : RecyclerView.Adapter<BouquetAdapter.BouquetViewHolder>() {
 
@@ -25,6 +27,7 @@ class BouquetAdapter(
         val descriptionTextView: TextView = itemView.findViewById(R.id.tvBouquetDescription)
         val priceTextView: TextView = itemView.findViewById(R.id.tvBouquetPrice)
         val orderButton: Button = itemView.findViewById(R.id.btnOrder)
+        val addToCartButton: ImageButton = itemView.findViewById(R.id.btnAddToCart)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BouquetViewHolder {
@@ -33,28 +36,48 @@ class BouquetAdapter(
         return BouquetViewHolder(view)
     }
 
+    fun updateList(newList: List<Bouquet>) {
+        bouquets.clear()
+        bouquets.addAll(newList)
+        notifyDataSetChanged()
+    }
+
     override fun onBindViewHolder(holder: BouquetViewHolder, position: Int) {
         val bouquet = bouquets[position]
 
+        // 1. Set Data Tampilan
         holder.imageView.setImageResource(bouquet.imageResId)
         holder.nameTextView.text = bouquet.name
-        holder.descriptionTextView.text = bouquet.description
+        holder.descriptionTextView.text = "${bouquet.description}\nKategori: ${bouquet.category.name.replace("_", " ")}"
         holder.priceTextView.text = bouquet.getFormattedPrice()
 
-        val stockLabel = if (bouquet.stock > 0) "Tersedia: ${bouquet.stock}" else "Habis"
-        holder.descriptionTextView.append("\nKategori: ${bouquet.category.name} | $stockLabel")
+        // 2. Navigasi ke Detail Activity (Klik pada gambar/card)
+        holder.itemView.setOnClickListener {
+            val intent = Intent(holder.itemView.context, DetailActivity::class.java).apply {
+                // Kirim SEMUA data bouquet yang diperlukan
+                putExtra("BOUQUET_ID", bouquet.id)
+                putExtra("BOUQUET_NAME", bouquet.name)
+                putExtra("BOUQUET_DESCRIPTION", bouquet.description)
+                putExtra("BOUQUET_PRICE", bouquet.price)
+                putExtra("BOUQUET_CATEGORY", bouquet.category.name)
+                putExtra("BOUQUET_IMAGE_ID", bouquet.imageResId)
+            }
+            holder.itemView.context.startActivity(intent)
+        }
 
-        holder.orderButton.isEnabled = bouquet.stock > 0
+        // 3. Listener Tombol Pesan & Keranjang (Quick Add)
         holder.orderButton.setOnClickListener {
             listener.onOrderClick(bouquet)
         }
+
+        holder.addToCartButton.setOnClickListener {
+            listener.onOrderClick(bouquet)
+        }
+
+        // Pastikan tombol selalu aktif (Sesuai request "Selalu Tersedia")
+        holder.orderButton.isEnabled = true
+        holder.addToCartButton.isEnabled = true
     }
 
     override fun getItemCount(): Int = bouquets.size
-
-    // FIX: Tambahkan method updateList yang diperlukan oleh DashboardFragment
-    fun updateList(newList: List<Bouquet>) {
-        bouquets = newList
-        notifyDataSetChanged()
-    }
 }

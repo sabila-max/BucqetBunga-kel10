@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -17,9 +18,8 @@
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:layout_centerVertical="true"
-            android:layout_marginTop="8dp"
-            android:elevation="4dp"
-            android:radius="24dp">
+            app:cardCornerRadius="24dp"
+            app:cardElevation="4dp">
 
             <EditText
                 android:id="@+id/etSearch"
@@ -30,13 +30,15 @@
                 android:paddingEnd="16dp"
                 android:background="@android:color/white"
                 android:drawableStart="@android:drawable/ic_menu_search"
-                android:drawablePadding="8dp" />
+                android:drawablePadding="8dp"
+                android:inputType="text"
+                android:maxLines="1" />
 
         </androidx.cardview.widget.CardView>
 
     </RelativeLayout>
 
-    <!-- Kategori Title -->
+    <!-- Kategori -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -44,21 +46,29 @@
         android:textSize="16sp"
         android:textStyle="bold"
         android:textColor="#2D3142"
-        android:layout_margin="16dp" />
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="8dp" />
 
-    <!-- ✅ TAMBAHKAN INI: categoryContainer -->
+    <!-- Horizontal ScrollView untuk Kategori Button -->
     <HorizontalScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:scrollbars="none"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp">
+        android:layout_marginBottom="16dp">
 
         <LinearLayout
             android:id="@+id/categoryContainer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal" />
+            android:orientation="horizontal"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp">
+
+            <!-- Tombol kategori akan ditambahkan via code -->
+            <!-- Contoh: All, Artificial, Snack, Fresh, dll -->
+
+        </LinearLayout>
 
     </HorizontalScrollView>
 
@@ -66,7 +76,11 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvBouquets"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="8dp" />
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:paddingBottom="8dp"
+        android:clipToPadding="false" />
 
 </LinearLayout>

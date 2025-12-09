@@ -3,21 +3,20 @@ package com.example.bucqetbunga.models
 import java.text.NumberFormat
 import java.util.*
 
-// Bouquet.id digunakan sebagai pengenal.
 data class CartItem(
+    val id: Long,
     val bouquet: Bouquet,
     var quantity: Int = 1,
-    var isSelected: Boolean = true // Default set True saat item ditambahkan
+    var isSelected: Boolean = true,
+    var note: String = "" // <-- TAMBAHAN: Field untuk catatan
 ) {
-    // Hitung total harga (harga × quantity)
     fun getTotalPrice(): Double {
         return bouquet.price * quantity
     }
 
     fun getFormattedTotal(): String {
-        // Menggunakan format Rupiah yang benar dan modern
-        val indonesiaLocale = Locale.forLanguageTag("in-ID")
-        val formatter = NumberFormat.getCurrencyInstance(indonesiaLocale)
+        val localeID = Locale("in", "ID")
+        val formatter = NumberFormat.getCurrencyInstance(localeID)
         formatter.maximumFractionDigits = 0
         return formatter.format(getTotalPrice())
     }

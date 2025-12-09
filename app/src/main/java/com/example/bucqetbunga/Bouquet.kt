@@ -1,21 +1,18 @@
-// File: Bouquet.kt
 package com.example.bucqetbunga.models
 
 import java.text.NumberFormat
 import java.util.*
 import com.example.bucqetbunga.BouquetCategory
+
 data class Bouquet(
-    val id: Int,
-    val name: String,
-    val description: String,
-    val price: Double,
-    val category: BouquetCategory,
-    val stock: Int,
-    val imageResId: Int
+    val id: Int = 0,
+    val name: String = "",
+    val description: String = "",
+    val price: Double = 0.0,
+    val category: BouquetCategory = BouquetCategory.ALL,
+    val imageResId: Int = 0
 ) {
     fun getFormattedPrice(): String {
-        val formatter = NumberFormat.getCurrencyInstance(Locale("in", "ID"))
-        formatter.maximumFractionDigits = 0
-        return formatter.format(price)
+        return "Rp ${"%,d".format(price.toInt()).replace(",", ".")}"
     }
 }

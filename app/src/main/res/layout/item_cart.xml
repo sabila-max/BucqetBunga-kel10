@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
     app:cardCornerRadius="12dp"
-    app:cardElevation="2dp">
+    app:cardElevation="4dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -13,21 +14,23 @@
         android:orientation="horizontal"
         android:padding="12dp">
 
-        <!-- Checkbox -->
+        <!-- Checkbox Select -->
         <CheckBox
             android:id="@+id/cbSelect"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical" />
+            android:layout_gravity="center_vertical"
+            android:checked="true" />
 
-        <!-- Gambar Produk -->
+        <!-- Gambar -->
         <ImageView
-            android:id="@+id/ivProduct"
+            android:id="@+id/ivCartImage"
             android:layout_width="80dp"
             android:layout_height="80dp"
+            android:layout_marginStart="8dp"
             android:scaleType="centerCrop"
-            android:src="@drawable/ic_launcher_background"
-            android:layout_marginStart="8dp" />
+            android:src="@drawable/abigail"
+            android:contentDescription="Gambar bouquet" />
 
         <!-- Info Produk -->
         <LinearLayout
@@ -35,72 +38,78 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:layout_marginStart="12dp"
-            android:layout_gravity="center_vertical">
+            android:paddingStart="12dp">
 
+            <!-- Nama -->
             <TextView
-                android:id="@+id/tvProductName"
+                android:id="@+id/tvCartName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Bucket Snack Mix Pink"
-                android:textSize="14sp"
-                android:textStyle="bold"
+                android:text="Caleo"
+                android:textSize="16sp"
                 android:textColor="#2D3142"
-                android:maxLines="2"
-                android:ellipsize="end" />
+                android:textStyle="bold" />
 
+            <!-- Harga -->
             <TextView
-                android:id="@+id/tvProductPrice"
+                android:id="@+id/tvCartPrice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Rp. 65.000"
+                android:layout_marginTop="4dp"
+                android:text="Rp 175.000"
                 android:textSize="14sp"
                 android:textColor="#FF8FA1"
-                android:layout_marginTop="4dp" />
+                android:textStyle="bold" />
 
-            <!-- Quantity Control -->
+            <!-- Note (jika ada) -->
+            <TextView
+                android:id="@+id/tvCartNote"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="Catatan: ..."
+                android:textSize="12sp"
+                android:textColor="#666666"
+                android:visibility="gone" />
+
+            <!-- Quantity Controls -->
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:layout_marginTop="8dp"
-                android:gravity="center_vertical">
+                android:orientation="horizontal">
 
+                <!-- Minus -->
                 <Button
-                    android:id="@+id/btnDecrease"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
+                    android:id="@+id/btnMinus"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
                     android:text="-"
-                    android:textSize="16sp"
-                    android:backgroundTint="#E0E0E0"
-                    android:textColor="#2D3142"
-                    android:padding="0dp" />
+                    android:textSize="18sp"
+                    android:backgroundTint="#FF8FA1"
+                    android:textColor="@android:color/white" />
 
+                <!-- Quantity -->
                 <TextView
                     android:id="@+id/tvQuantity"
                     android:layout_width="40dp"
-                    android:layout_height="wrap_content"
-                    android:text="1"
-                    android:textSize="14sp"
-                    android:textColor="#2D3142"
+                    android:layout_height="36dp"
                     android:gravity="center"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginEnd="8dp" />
-
-                <Button
-                    android:id="@+id/btnIncrease"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:text="+"
+                    android:text="1"
                     android:textSize="16sp"
+                    android:textColor="#2D3142" />
+
+                <!-- Plus -->
+                <Button
+                    android:id="@+id/btnPlus"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:text="+"
+                    android:textSize="18sp"
                     android:backgroundTint="#FF8FA1"
-                    android:textColor="@android:color/white"
-                    android:padding="0dp" />
+                    android:textColor="@android:color/white" />
 
             </LinearLayout>
-
         </LinearLayout>
-
     </LinearLayout>
-
 </androidx.cardview.widget.CardView>
