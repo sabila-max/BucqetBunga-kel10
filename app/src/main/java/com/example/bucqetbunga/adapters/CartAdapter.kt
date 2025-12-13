@@ -81,6 +81,7 @@ class CartAdapter(
 
     override fun getItemCount(): Int = cartItems.size
 
+    // Dipanggil ketika CartFragment memuat ulang list dari CartManager
     fun updateList(newList: List<CartItem>) {
         cartItems.clear()
         cartItems.addAll(newList)

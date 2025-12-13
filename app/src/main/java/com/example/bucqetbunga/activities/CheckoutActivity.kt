@@ -14,7 +14,6 @@ class CheckoutActivity : AppCompatActivity() {
 
     private lateinit var cartManager: CartManager
     private lateinit var orderManager: OrderManager
-
     private lateinit var ivBack: ImageView
     private lateinit var tvProductName: TextView
     private lateinit var tvTotal: TextView
@@ -41,7 +40,7 @@ class CheckoutActivity : AppCompatActivity() {
         loadCheckoutData()
         setupListeners()
 
-        // PERBAIKAN: Setup OnBackPressedCallback untuk Android baru
+        // Setup OnBackPressedCallback untuk Android baru
         setupOnBackPressed()
     }
 
@@ -63,12 +62,11 @@ class CheckoutActivity : AppCompatActivity() {
     }
 
     private fun setupOnBackPressed() {
-        // PERBAIKAN: Menggunakan OnBackPressedCallback yang baru
         val callback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 if (orderCompleted) {
-                    // Jika order sudah selesai, tampilkan dialog konfirmasi
-                    showExitConfirmation()
+                    // Jika order sudah selesai, kembali ke halaman Order
+                    navigateToOrderPage()
                 } else {
                     // Jika belum checkout, langsung kembali
                     finish()
@@ -76,18 +74,17 @@ class CheckoutActivity : AppCompatActivity() {
             }
         }
 
-        // Tambahkan callback ke dispatcher
         onBackPressedDispatcher.addCallback(this, callback)
     }
 
     private fun showExitConfirmation() {
         val dialog = android.app.AlertDialog.Builder(this)
-            .setTitle("Keluar")
-            .setMessage("Pesanan sudah berhasil. Apakah Anda yakin ingin keluar?")
+            .setTitle("Lihat Pesanan")
+            .setMessage("Pesanan sudah berhasil dibuat. Ingin melihat detail pesanan?")
             .setPositiveButton("Ya") { _, _ ->
-                finish()
+                navigateToOrderPage()
             }
-            .setNegativeButton("Tidak", null)
+            .setNegativeButton("Nanti", null)
             .create()
 
         dialog.show()
@@ -114,7 +111,7 @@ class CheckoutActivity : AppCompatActivity() {
     private fun setupListeners() {
         ivBack.setOnClickListener {
             if (orderCompleted) {
-                showExitConfirmation()
+                navigateToOrderPage()
             } else {
                 finish()
             }
@@ -189,7 +186,7 @@ class CheckoutActivity : AppCompatActivity() {
 
         // Tampilkan konfirmasi
         Toast.makeText(this,
-            "Pesanan berhasil!\nID: #${order.id.takeLast(6)}",
+            "Pesanan berhasil dibuat!\nID: #${order.id.takeLast(6)}",
             Toast.LENGTH_LONG
         ).show()
 
@@ -210,6 +207,22 @@ class CheckoutActivity : AppCompatActivity() {
         for (i in 0 until rgPayment.childCount) {
             rgPayment.getChildAt(i).isEnabled = false
         }
+
+        // PERUBAHAN UTAMA: Langsung navigasi ke halaman Order setelah 1.5 detik
+        android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
+            navigateToOrderPage()
+        }, 1500) // Delay 1.5 detik agar user sempat membaca toast
+    }
+
+    private fun navigateToOrderPage() {
+        val intent = Intent(this, MainActivity::class.java).apply {
+            // Clear semua activity di atasnya
+            flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+            // Tambahkan flag untuk membuka tab Order
+            putExtra("open_orders", true)
+        }
+        startActivity(intent)
+        finish()
     }
 
     private fun sendToWhatsApp(order: com.example.bucqetbunga.models.Order) {
@@ -248,23 +261,23 @@ class CheckoutActivity : AppCompatActivity() {
         return """
             Halo, saya ingin memesan buket bunga:
             
-            📋 *DETAIL PESANAN*
+            *DETAIL PESANAN*
             ID Order: ${order.id}
             Tanggal: ${order.getFormattedDate()}
             
-            👤 *DATA PENERIMA*
+            *DATA PENERIMA*
             Nama: ${order.customerName}
             Alamat: ${order.address}
             No. HP: ${order.phone}
             Catatan: ${if (order.note.isEmpty()) "-" else order.note}
             
-            🛍️ *ITEM PESANAN:*
+            *ITEM PESANAN:*
             $itemsText
             
-            💰 *TOTAL PEMBAYARAN:*
+            *TOTAL PEMBAYARAN:*
             ${order.getFormattedTotal()}
             
-            💳 *METODE PEMBAYARAN:*
+            *METODE PEMBAYARAN:*
             ${order.paymentMethod}
             
             Mohon konfirmasi ketersediaan dan total yang harus dibayar.

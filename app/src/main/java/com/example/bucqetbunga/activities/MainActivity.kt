@@ -1,6 +1,7 @@
 package com.example.bucqetbunga.activities
 
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.example.bucqetbunga.R
@@ -16,60 +17,84 @@ class MainActivity : AppCompatActivity() {
     private lateinit var bottomNav: BottomNavigationView
     private lateinit var cartManager: CartManager
 
+    companion object {
+        private const val TAG = "MainActivity"
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        Log.d(TAG, "onCreate called")
 
-        // Inisialisasi CartManager sebagai Class
-        cartManager = CartManager(this)
+        try {
+            setContentView(R.layout.activity_main)
 
-        bottomNav = findViewById(R.id.bottomNavigation)
+            cartManager = CartManager(this)
+            bottomNav = findViewById(R.id.bottomNavigation)
 
+            setupBottomNavigation()
+
+            // Cek apakah ada intent untuk buka tab Pesanan
+            val openOrders = intent.getBooleanExtra("open_orders", false)
+            Log.d(TAG, "Open orders intent: $openOrders")
+
+            if (savedInstanceState == null) {
+                if (openOrders) {
+                    Log.d(TAG, "Opening OrderFragment from intent")
+                    loadFragment(OrderFragment())
+                    bottomNav.selectedItemId = R.id.nav_order
+                } else {
+                    Log.d(TAG, "Opening DashboardFragment (default)")
+                    loadFragment(DashboardFragment())
+                    bottomNav.selectedItemId = R.id.nav_home
+                }
+            }
+
+            updateCartBadge()
+        } catch (e: Exception) {
+            Log.e(TAG, "Error in onCreate: ${e.message}", e)
+        }
+    }
+
+    private fun setupBottomNavigation() {
         bottomNav.setOnItemSelectedListener { item ->
             var selectedFragment: Fragment? = null
 
             when (item.itemId) {
-                R.id.nav_home -> selectedFragment = DashboardFragment()
-                R.id.nav_cart -> selectedFragment = CartFragment()
-                R.id.nav_order -> selectedFragment = OrderFragment()
-                R.id.nav_profile -> selectedFragment = ProfileFragment()
+                R.id.nav_home -> {
+                    Log.d(TAG, "DashboardFragment selected")
+                    selectedFragment = DashboardFragment()
+                }
+                R.id.nav_cart -> {
+                    Log.d(TAG, "CartFragment selected")
+                    selectedFragment = CartFragment()
+                }
+                R.id.nav_order -> {
+                    Log.d(TAG, "OrderFragment selected")
+                    selectedFragment = OrderFragment()
+                }
+                R.id.nav_profile -> {
+                    Log.d(TAG, "ProfileFragment selected")
+                    selectedFragment = ProfileFragment()
+                }
             }
 
             selectedFragment?.let {
-                supportFragmentManager.beginTransaction()
-                    .replace(R.id.fragmentContainer, it)
-                    .commit()
+                loadFragment(it)
             }
 
             true
         }
+    }
 
-        // Cek apakah ada intent untuk buka tab Pesanan
-        val openOrders = intent.getBooleanExtra("open_orders", false)
-        val openCart = intent.getBooleanExtra("open_cart", false)
-        if (savedInstanceState == null) {
-            if (openOrders) {
-                // Buka tab Pesanan setelah checkout
-                supportFragmentManager.beginTransaction()
-                    .replace(R.id.fragmentContainer, OrderFragment())
-                    .commit()
-                bottomNav.selectedItemId = R.id.nav_order
-            } else if (openCart) {
-                // Buka tab Keranjang
-                supportFragmentManager.beginTransaction()
-                    .replace(R.id.fragmentContainer, CartFragment())
-                    .commit()
-                bottomNav.selectedItemId = R.id.nav_cart
-            } else {
-                // Default: buka Dashboard
-                supportFragmentManager.beginTransaction()
-                    .replace(R.id.fragmentContainer, DashboardFragment())
-                    .commit()
-                bottomNav.selectedItemId = R.id.nav_home
-            }
+    private fun loadFragment(fragment: Fragment) {
+        try {
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.fragmentContainer, fragment)
+                .commit()
+            Log.d(TAG, "Fragment loaded: ${fragment::class.java.simpleName}")
+        } catch (e: Exception) {
+            Log.e(TAG, "Error loading fragment: ${e.message}", e)
         }
-
-        updateCartBadge()
     }
 
     override fun onResume() {
@@ -77,16 +102,20 @@ class MainActivity : AppCompatActivity() {
         updateCartBadge()
     }
 
-    // FIX: Mengubah CartManager.getCartCount() menjadi cartManager.getCartCount()
     fun updateCartBadge() {
-        val badge = bottomNav.getOrCreateBadge(R.id.nav_cart)
-        val cartCount = cartManager.getCartCount() // Menggunakan instance CartManager
+        try {
+            val badge = bottomNav.getOrCreateBadge(R.id.nav_cart)
+            val cartCount = cartManager.getCartCount()
 
-        if (cartCount > 0) {
-            badge.isVisible = true
-            badge.number = cartCount
-        } else {
-            badge.isVisible = false
+            if (cartCount > 0) {
+                badge.isVisible = true
+                badge.number = cartCount
+            } else {
+                badge.isVisible = false
+            }
+            Log.d(TAG, "Cart badge updated: $cartCount items")
+        } catch (e: Exception) {
+            Log.e(TAG, "Error updating cart badge: ${e.message}", e)
         }
     }
 }
