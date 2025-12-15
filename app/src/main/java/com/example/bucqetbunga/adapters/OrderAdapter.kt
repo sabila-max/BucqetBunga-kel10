@@ -1,6 +1,7 @@
 package com.example.bucqetbunga.adapters
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,6 +15,10 @@ class OrderAdapter(
     private val context: Context,
     private var orders: List<Order>
 ) : RecyclerView.Adapter<OrderAdapter.ViewHolder>() {
+
+    companion object {
+        private const val TAG = "OrderAdapter"
+    }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvOrderId: TextView = view.findViewById(R.id.tvOrderId)
@@ -31,28 +36,51 @@ class OrderAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val order = orders[position]
+        try {
+            val order = orders[position]
 
-        holder.tvOrderId.text = "Order #${order.id}"
-        holder.tvOrderDate.text = order.getFormattedDate()
-        holder.tvCustomerName.text = order.customerName
-        holder.tvItemsSummary.text = order.getItemsSummary()
-        holder.tvTotal.text = order.getFormattedTotal()
-        holder.tvStatus.text = order.status
+            // Set data dengan safe null handling
+            holder.tvOrderId.text = "Order #${order.id.takeLast(8)}"
+            holder.tvOrderDate.text = order.getFormattedDate()
+            holder.tvCustomerName.text = order.customerName.ifEmpty { "Tidak ada nama" }
+            holder.tvItemsSummary.text = order.getItemsSummary()
+            holder.tvTotal.text = order.getFormattedTotal()
+            holder.tvStatus.text = order.status
 
-        // Set warna status
-        when (order.status) {
-            "Menunggu Pembayaran" -> holder.tvStatus.setTextColor(context.getColor(android.R.color.holo_orange_dark))
-            "Diproses" -> holder.tvStatus.setTextColor(context.getColor(android.R.color.holo_blue_dark))
-            "Dikirim" -> holder.tvStatus.setTextColor(context.getColor(android.R.color.holo_purple))
-            "Selesai" -> holder.tvStatus.setTextColor(context.getColor(android.R.color.holo_green_dark))
+            // Set warna status
+            val statusColor = when (order.status) {
+                "Menunggu Pembayaran" -> android.R.color.holo_orange_dark
+                "Diproses" -> android.R.color.holo_blue_dark
+                "Dikirim" -> android.R.color.holo_purple
+                "Selesai" -> android.R.color.holo_green_dark
+                "Dibatalkan" -> android.R.color.holo_red_dark
+                else -> android.R.color.darker_gray
+            }
+
+            holder.tvStatus.setTextColor(context.getColor(statusColor))
+
+            Log.d(TAG, "Order bound: ${order.id}, items: ${order.items.size}")
+        } catch (e: Exception) {
+            Log.e(TAG, "Error binding order at position $position: ${e.message}", e)
+            // Set default values untuk mencegah crash
+            holder.tvOrderId.text = "Error loading order"
+            holder.tvOrderDate.text = "-"
+            holder.tvCustomerName.text = "-"
+            holder.tvItemsSummary.text = "-"
+            holder.tvTotal.text = "Rp 0"
+            holder.tvStatus.text = "Error"
         }
     }
 
     override fun getItemCount(): Int = orders.size
 
     fun updateList(newList: List<Order>) {
-        orders = newList
-        notifyDataSetChanged()
+        try {
+            orders = newList
+            notifyDataSetChanged()
+            Log.d(TAG, "Order list updated: ${newList.size} orders")
+        } catch (e: Exception) {
+            Log.e(TAG, "Error updating order list: ${e.message}", e)
+        }
     }
 }

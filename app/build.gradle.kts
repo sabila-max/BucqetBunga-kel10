@@ -61,6 +61,7 @@ dependencies {
     // Glide untuk load gambar
     implementation("com.github.bumptech.glide:glide:4.16.0")
     implementation(libs.androidx.activity)
+    implementation(libs.firebase.crashlytics.buildtools)
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")

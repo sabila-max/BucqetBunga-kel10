@@ -20,11 +20,14 @@ import com.example.bucqetbunga.utils.CartManager
 
 class CartFragment : Fragment() {
 
+    // Deklarasi komponen UI
     private lateinit var rvCart: RecyclerView
     private lateinit var adapter: CartAdapter
     private lateinit var tvTotal: TextView
     private lateinit var btnCheckout: Button
     private lateinit var emptyState: LinearLayout
+
+    // CartManager untuk mengelola isi keranjang
     private lateinit var cartManager: CartManager
 
     override fun onCreateView(
@@ -32,27 +35,40 @@ class CartFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        // Inflate layout fragment_cart.xml
         val view = inflater.inflate(R.layout.fragment_cart, container, false)
-        // FIX: Inisialisasi CartManager sebagai class
+
+        // Inisialisasi CartManager dengan Context fragment
         cartManager = CartManager(requireContext())
+
         return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // Inisialisasi komponen UI
         initViews(view)
+
+        // Setup RecyclerView dan adapter
         setupRecyclerView()
-        // updateUI dipanggil di onResume dan setelah setup RecyclerView
+
+        // Update tampilan saat fragment pertama kali dibuat
+        updateUI()
     }
 
     override fun onResume() {
         super.onResume()
-        updateUI() // Memastikan UI diperbarui setiap kali Fragment kembali ke tampilan
-        (activity as? MainActivity)?.updateCartBadge() // Update badge di BottomNav
+
+        // Update UI ketika kembali ke fragment
+        updateUI()
+
+        // Update badge cart di BottomNavigation (jumlah item terpilih)
+        (activity as? MainActivity)?.updateCartBadge()
     }
 
     private fun initViews(view: View) {
-        // ID INI SEKARANG DIPASTIKAN ADA DI fragment_cart.xml
+        // Menghubungkan ID layout ke variabel
         rvCart = view.findViewById(R.id.rvCart)
         tvTotal = view.findViewById(R.id.tvTotal)
         btnCheckout = view.findViewById(R.id.btnCheckout)
@@ -60,22 +76,38 @@ class CartFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        adapter = CartAdapter(requireContext(), cartManager.getCartItems().toMutableList()) {
-            updateTotal() // Callback dari adapter saat item/jumlah/pilihan berubah
+
+        // Adapter menerima list item dari CartManager
+        adapter = CartAdapter(
+            requireContext(),
+            cartManager.getCartItems().toMutableList()
+        ) {
+            // Callback ketika jumlah/centang item berubah
+            updateTotal()
             updateUI()
+
+            // Update badge di MainActivity
             (activity as? MainActivity)?.updateCartBadge()
         }
 
+        // Menampilkan list secara vertikal
         rvCart.layoutManager = LinearLayoutManager(context)
         rvCart.adapter = adapter
 
+        // Tombol Checkout
         btnCheckout.setOnClickListener {
             val selectedItems = cartManager.getSelectedItems()
+
+            // Cek apakah minimal satu item sudah dicentang
             if (selectedItems.isNotEmpty()) {
                 val intent = Intent(activity, CheckoutActivity::class.java)
                 startActivity(intent)
             } else {
-                Toast.makeText(context, "Pilih minimal satu item untuk Checkout!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    context,
+                    "Pilih minimal satu item untuk Checkout!",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }
@@ -84,27 +116,41 @@ class CartFragment : Fragment() {
         val cartItems = cartManager.getCartItems()
 
         if (cartItems.isEmpty()) {
+            // Jika keranjang kosong → tampilkan empty state
             emptyState.visibility = View.VISIBLE
             rvCart.visibility = View.GONE
-            tvTotal.text = cartManager.getFormattedTotal() // Menampilkan Rp0
+
+            // Total ditampilkan tetap Rp0
+            tvTotal.text = cartManager.getFormattedTotal()
+
+            // Nonaktifkan tombol checkout
             btnCheckout.isEnabled = false
             btnCheckout.text = "Checkout"
         } else {
+            // Jika ada item → tampilkan RecyclerView
             emptyState.visibility = View.GONE
             rvCart.visibility = View.VISIBLE
+
+            // Perbarui adapter dengan data terbaru
             adapter.updateList(cartItems)
+
+            // Hitung ulang total harga
             updateTotal()
         }
     }
 
     private fun updateTotal() {
+        // Tampilkan total harga format "Rp..."
         tvTotal.text = cartManager.getFormattedTotal()
 
+        // Hitung jumlah item yang dicentang
         val selectedCount = cartManager.getSelectedItems().size
         val isAnyItemSelected = selectedCount > 0
 
+        // Aktif/Nonaktifkan tombol checkout
         btnCheckout.isEnabled = isAnyItemSelected
 
+        // Ganti text tombol sesuai jumlah item yang dipilih
         if (isAnyItemSelected) {
             btnCheckout.text = "Checkout (${selectedCount} Item)"
         } else {

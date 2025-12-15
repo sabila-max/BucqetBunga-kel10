@@ -40,22 +40,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:scaleType="centerCrop"
-                    android:src="@android:drawable/ic_menu_myplaces"
+                    android:src="@drawable/outline_account_circle_24"
                     android:background="@android:color/white" />
 
             </androidx.cardview.widget.CardView>
-
-            <!-- Edit Button -->
-            <ImageView
-                android:id="@+id/btnEditPhoto"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentBottom="true"
-                android:src="@android:drawable/ic_menu_edit"
-                android:background="@android:color/white"
-                android:padding="6dp"
-                android:elevation="6dp" />
 
         </RelativeLayout>
 
