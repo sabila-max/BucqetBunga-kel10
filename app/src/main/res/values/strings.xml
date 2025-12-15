@@ -6,7 +6,6 @@
     <string name="next">Next</string>
     <string name="previous">Previous</string>
 
-    <!-- UNTUK ITEM_BOUQUET.XML -->
     <string name="bouquet_image_desc">Gambar Bouquet</string>
     <string name="bouquet_name_sample">Leony</string>
     <string name="bouquet_desc_sample">Bunga Mawar, Gompie, Filler...</string>

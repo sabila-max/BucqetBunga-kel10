@@ -12,7 +12,7 @@ data class Bouquet(
     val price: Double = 0.0,
     val category: BouquetCategory = BouquetCategory.ALL,
     val imageResId: Int = 0
-) : Serializable {  // TAMBAHKAN: Implement Serializable
+) : Serializable {
     fun getFormattedPrice(): String {
         return "Rp ${"%,d".format(price.toInt()).replace(",", ".")}"
     }

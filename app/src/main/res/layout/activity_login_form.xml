@@ -23,7 +23,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         app:cardElevation="8dp"
-        app:cardCornerRadius="20dp">
+        app:cardCornerRadius="20dp"
+        app:cardBackgroundColor="@color/white">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -77,7 +78,7 @@
             <Button
                 android:id="@+id/btnLogin"
                 android:layout_width="match_parent"
-                android:layout_height="56dp"
+                android:layout_height="40dp"
                 android:backgroundTint="#2D3142"
                 android:text="Login"
                 android:textColor="@android:color/white" />
@@ -90,7 +91,7 @@
                 android:text="Demo: email = salsabilaabel63@gmail.com, password = 123456"
                 android:textColor="#9E9E9E"
                 android:textSize="10sp" />
-            
+
             <TextView
                 android:id="@+id/tvRegisterLink"
                 android:layout_width="wrap_content"
@@ -99,7 +100,7 @@
                 android:layout_marginTop="32dp"
                 android:text="Belum punya akun? Daftar Sekarang"
                 android:textColor="#2D3142"
-                android:textSize="14sp"
+                android:textSize="16sp"
                 android:textStyle="bold"
                 android:clickable="true"
                 android:focusable="true"/>

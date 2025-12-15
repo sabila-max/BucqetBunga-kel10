@@ -14,7 +14,9 @@ object BouquetDataSource {
         Bouquet(6, "luxury", "Satin (By Request), Glitter", 300000.0, BouquetCategory.SATIN, R.drawable.luxury),
         Bouquet(7, "abigail", "Rose, Garbera, Lily, Filler, Daisy", 285000.0, BouquetCategory.ARTIFICIAL, R.drawable.abigail),
         Bouquet(8, "alea", "Pikok, Rose", 150000.0, BouquetCategory.WEDDING, R.drawable.alea),
-        Bouquet(9, "moonblue", "Orchid, Aster, Garbera, Rose, Gompie, LL", 500000.0, BouquetCategory.ORCHID_VASE, R.drawable.moonblue),
+        Bouquet(9, "moonblue", "Orchid, Aster, Garbera, Rose, Gompie, LL", 500000.0, BouquetCategory.ORCHID_VASE,
+            R.drawable.katty
+        ),
         Bouquet(10, "cheera", "Baby Rose, Rose, Garbera, Gompie, Aster", 225000.0, BouquetCategory.FLOWER_VASE, R.drawable.cheera),
         Bouquet(11, "ring Box", "Rose, Baby Breath", 200000.0, BouquetCategory.GIFT, R.drawable.ringbox),
         Bouquet(12, "snowie", "Rokok, Boneka, Flower Mix", 200000.0, BouquetCategory.ROKOK, R.drawable.snowie),

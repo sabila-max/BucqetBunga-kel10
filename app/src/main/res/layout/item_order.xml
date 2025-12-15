@@ -6,39 +6,41 @@
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
     app:cardCornerRadius="12dp"
-    app:cardElevation="4dp">
+    app:cardElevation="4dp"
+    app:cardBackgroundColor="@android:color/white">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="16dp"
+        android:background="@android:color/white">
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <!-- Order ID -->
+        <TextView
+            android:id="@+id/tvOrderId"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:text="Order #1"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#2D3142"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/tvStatus" />
 
-            <TextView
-                android:id="@+id/tvOrderId"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Order #1"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:textColor="#2D3142" />
+        <!-- Status -->
+        <TextView
+            android:id="@+id/tvStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Menunggu Pembayaran"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:textColor="#FF9800"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/tvStatus"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Menunggu Pembayaran"
-                android:textSize="12sp"
-                android:textStyle="bold" />
-
-        </LinearLayout>
-
+        <!-- Tanggal -->
         <TextView
             android:id="@+id/tvOrderDate"
             android:layout_width="wrap_content"
@@ -46,8 +48,11 @@
             android:text="01 Jan 2024, 10:00"
             android:textSize="12sp"
             android:textColor="#9E9E9E"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvOrderId"
             android:layout_marginTop="4dp" />
 
+        <!-- Nama Customer -->
         <TextView
             android:id="@+id/tvCustomerName"
             android:layout_width="wrap_content"
@@ -55,51 +60,61 @@
             android:text="Nama Pelanggan"
             android:textSize="14sp"
             android:textColor="#2D3142"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvOrderDate"
             android:layout_marginTop="8dp" />
 
+        <!-- Ringkasan Item -->
         <TextView
             android:id="@+id/tvItemsSummary"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="Bucket Snack Mix Pink (1x)"
             android:textSize="12sp"
             android:textColor="#9E9E9E"
-            android:layout_marginTop="4dp"
             android:maxLines="2"
-            android:ellipsize="end" />
+            android:ellipsize="end"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvCustomerName"
+            android:layout_marginTop="4dp" />
 
+        <!-- Divider -->
         <View
-            android:layout_width="match_parent"
+            android:id="@+id/divider"
+            android:layout_width="0dp"
             android:layout_height="1dp"
             android:background="#E0E0E0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvItemsSummary"
             android:layout_marginTop="12dp"
             android:layout_marginBottom="12dp" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <!-- Label Total -->
+        <TextView
+            android:id="@+id/tvTotalLabel"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:text="Total:"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="#2D3142"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/divider" />
 
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Total:"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:textColor="#2D3142" />
+        <!-- Total Harga -->
+        <TextView
+            android:id="@+id/tvTotal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Rp 65.000"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#FF8FA1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/tvTotalLabel" />
 
-            <TextView
-                android:id="@+id/tvTotal"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Rp. 65.000"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:textColor="#FF8FA1" />
-
-        </LinearLayout>
-
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.cardview.widget.CardView>
